@@ -58,18 +58,18 @@ Same as Cursor — paste the canvas skill, send "Begin." Each skill is self-cont
 flowchart TD
     Start(["Your agent"]) --> Canvas
 
-    Canvas["/lignos-canvas\n4 questions"]
-    Canvas --> Standard[".lignos/canvas.md\nProduct Standard"]
-    Canvas --> EvalSet["Judge Prompt · Seeds · Blocking Assertion\nLive Taste Test → PASS/FAIL · Your Standard Declared"]
+    Canvas["/lignos-canvas<br/>4 questions"]
+    Canvas --> Standard[".lignos/canvas.md<br/>Product Standard"]
+    Canvas --> EvalSet["Judge Prompt · Seeds · Blocking Assertion<br/>Live Taste Test · PASS/FAIL · Standard Declared"]
 
-    Standard --> Govern["/lignos-govern\nConstitution · CLAUDE.md"]
+    Standard --> Govern["/lignos-govern<br/>Constitution · CLAUDE.md"]
     Govern --> Ship(["Ship"])
-    Govern -.->|"optional\nStudio prep"| Scope["/lignos-scope\nmanifest.yaml · snippet"]
+    Govern -.->|"optional — Studio prep"| Scope["/lignos-scope<br/>manifest.yaml · snippet"]
 
     EvalSet --> Platforms["Braintrust · LangSmith · Promptfoo"]
 
-    Ship -->|"real output\nsurprises you"| Intake["/lignos-eval\nrate it · name it · capture it"]
-    Intake -->|"new scenario or\ngold standard"| EvalSet
+    Ship -->|"real output surprises you"| Intake["/lignos-eval<br/>rate it · name it · capture it"]
+    Intake -->|"new scenario or gold standard"| EvalSet
 ```
 
 Full install + usage for all environments: [`skills/README.md`](skills/README.md)
