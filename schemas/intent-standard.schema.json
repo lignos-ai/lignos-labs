@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lignos.dev/schemas/intent-standard/v1",
+  "title": "Lignos Intent Standard",
+  "description": "Portable Product Standard for one agent — canvas, eval, and Studio monitoring share this object.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "intentId",
+    "displayName",
+    "oneSentenceStandard",
+    "jtbd",
+    "productStandard",
+    "antiPattern",
+    "valueProxy"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Intent Standard schema version (not manifest version)."
+    },
+    "intentId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Machine-readable slug; matches lignos.intent.id and manifest metadata.intentId."
+    },
+    "displayName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "jtbdType": {
+      "type": "string",
+      "enum": [
+        "triage",
+        "summarization",
+        "research",
+        "generation",
+        "customer-facing",
+        "workflow"
+      ]
+    },
+    "oneSentenceStandard": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pinned on Intent Card — e.g. This agent is hired to … and must always …"
+    },
+    "jtbd": {
+      "type": "object",
+      "required": ["situation", "user", "outcome"],
+      "additionalProperties": false,
+      "properties": {
+        "situation": { "type": "string" },
+        "user": { "type": "string" },
+        "outcome": { "type": "string" }
+      }
+    },
+    "productStandard": {
+      "type": "object",
+      "required": ["summary", "tone", "constraints"],
+      "additionalProperties": false,
+      "properties": {
+        "summary": { "type": "string" },
+        "tone": { "type": "string" },
+        "format": { "type": "string" },
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "antiPattern": {
+      "type": "object",
+      "required": ["description", "signals"],
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "The specific wrong judgment — not a crash."
+        },
+        "signals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Phrases or behaviors that indicate taste drift."
+        },
+        "examples": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "valueProxy": {
+      "type": "object",
+      "required": ["observableSuccess", "judgeQuestion"],
+      "additionalProperties": false,
+      "properties": {
+        "observableSuccess": { "type": "string" },
+        "judgeQuestion": {
+          "type": "string",
+          "description": "LLM-judge or human check — was this run worth running?"
+        }
+      }
+    },
+    "manifest": {
+      "type": "object",
+      "description": "Structural governance — optional in Slice 1; required by Slice 3.",
+      "additionalProperties": false,
+      "properties": {
+        "version": { "type": "string" },
+        "milestones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["span", "required"],
+            "properties": {
+              "span": { "type": "string" },
+              "required": { "type": "boolean" },
+              "maxDurationMs": { "type": "integer", "minimum": 0 }
+            }
+          }
+        },
+        "sla": {
+          "type": "object",
+          "properties": {
+            "maxTurns": { "type": "integer" },
+            "maxDurationMs": { "type": "integer" },
+            "maxCostUsd": { "type": "number" },
+            "maxTokens": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "eval": {
+      "type": "object",
+      "description": "Eval handoff block — populated by engine export; optional in Slice 1.",
+      "additionalProperties": false,
+      "properties": {
+        "judgePrompt": { "type": "string" },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "jtbd_fit",
+              "standard_adherence",
+              "anti_pattern_guard",
+              "value_signal",
+              "structural_integrity"
+            ]
+          }
+        },
+        "scenarioSeeds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "inputSketch", "expectedBehavior", "failureMode"],
+            "properties": {
+              "id": { "type": "string" },
+              "inputSketch": { "type": "string" },
+              "expectedBehavior": { "type": "string" },
+              "failureMode": { "type": "string" }
+            }
+          }
+        },
+        "blockingAssertions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "canvasPath": { "type": "string" },
+        "constitutionPath": { "type": "string" },
+        "manifestPath": { "type": "string" },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

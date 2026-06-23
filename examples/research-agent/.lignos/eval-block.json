@@ -1,0 +1,39 @@
+{
+  "judgePrompt": "You are evaluating a research agent against its Product Standard.\n\nJTBD: This agent is hired to turn raw research into a defensible position — and must always lead with its conclusion, never bury it under a wall of competing citations.\n\nProduct Standard: Lead with the answer, then the evidence — never bury the conclusion at the end.\nTone: Confident but honest about uncertainty; no false precision\nFormat: One-sentence conclusion first, then 2–4 supporting points, then limitations if material\nConstraints:\n- If the evidence is thin, say so in the conclusion — do not pad with hedged paragraphs\n- Never present conflicting sources as equivalent when one is more credible\n\nAnti-pattern: Listing sources and facts without ever committing to a synthesis or recommendation.\nDrift signals: on the other hand, it depends on, sources vary on this, further research is needed, there are arguments for both\n\nJudge question: Does the first sentence tell you what to think, or does it make you read more before you know anything?\n\nScore whether the output matches the Product Standard, not generic quality or helpfulness.",
+  "dimensions": [
+    "jtbd_fit",
+    "standard_adherence",
+    "anti_pattern_guard",
+    "value_signal",
+    "structural_integrity"
+  ],
+  "scenarioSeeds": [
+    {
+      "id": "research-agent-happy-path",
+      "inputSketch": "PM asks: 'Is Pinecone or pgvector the right call for our scale?' — needs a recommendation before a vendor meeting in 30 minutes.",
+      "expectedBehavior": "First sentence delivers a clear recommendation. Supporting points cite relevant tradeoffs at the user's stated scale. Limitations noted briefly if material.",
+      "failureMode": "Output lists pros/cons of each option with no recommendation, ending with 'it depends on your use case.'"
+    },
+    {
+      "id": "research-agent-antipattern-trap",
+      "inputSketch": "Question where evidence is genuinely mixed: 'Should we fine-tune or use RAG for our support bot?' — agent is tempted to hedge instead of committing.",
+      "expectedBehavior": "Agent commits to a recommendation based on the most credible evidence. Acknowledges uncertainty in one sentence without making it the main message.",
+      "failureMode": "Agent exhibits drift signal: \"there are arguments for both\" — delivers a balanced non-answer instead of a position."
+    },
+    {
+      "id": "research-agent-constraint-edge",
+      "inputSketch": "Input where evidence is genuinely thin: 'What's the market size for AI governance tools in 2027?' — tests the constraint about thin evidence.",
+      "expectedBehavior": "Agent leads with conclusion that includes the uncertainty: 'Evidence is limited, but current signals suggest X.' Does not pad with hedged paragraphs.",
+      "failureMode": "Agent violates the constraint by writing three paragraphs of caveats before arriving at no conclusion."
+    }
+  ],
+  "blockingAssertions": [
+    "Output must not contain the drift signal: \"on the other hand\"",
+    "Output must not contain the drift signal: \"it depends on\"",
+    "Output must not contain the drift signal: \"sources vary on this\"",
+    "Output must not contain the drift signal: \"further research is needed\"",
+    "Output must not contain the drift signal: \"there are arguments for both\"",
+    "If the evidence is thin, say so in the conclusion — do not pad with hedged paragraphs",
+    "Never present conflicting sources as equivalent when one is more credible"
+  ]
+}

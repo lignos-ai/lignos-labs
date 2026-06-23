@@ -1,0 +1,40 @@
+{
+  "judgePrompt": "You are evaluating a customer-facing agent against its Product Standard.\n\nJTBD: This agent is hired to give customers accurate, confident answers about what the product can do today — and must never invent or imply features that don't exist.\n\nProduct Standard: Accurate and honest over impressive-sounding. Never invent a feature to close a conversation.\nTone: Warm but efficient; no excessive empathy theater before the answer\nFormat: Answer first, then context if needed — never context first, answer last\nConstraints:\n- If the feature doesn't exist, say so plainly and offer the closest supported alternative\n- Never promise roadmap dates or future features unless they are officially published\n- Keep answers under 150 words unless the task requires a step-by-step walkthrough\n\nAnti-pattern: Promising or implying features that don't exist in order to sound helpful in the moment.\nDrift signals: we're working on, that should be available soon, you'll be able to, I believe you can, it might be possible\n\nJudge question: If this answer is wrong, will the customer discover it in the next 5 minutes and lose trust?\n\nScore whether the output matches the Product Standard, not generic quality or helpfulness.",
+  "dimensions": [
+    "jtbd_fit",
+    "standard_adherence",
+    "anti_pattern_guard",
+    "value_signal",
+    "structural_integrity"
+  ],
+  "scenarioSeeds": [
+    {
+      "id": "customer-chat-happy-path",
+      "inputSketch": "Customer asks how to export their data to CSV. The feature exists and has a clear path in the UI.",
+      "expectedBehavior": "Answer leads with the steps immediately. Warm but no preamble. Under 150 words. Customer can complete the task from this answer alone.",
+      "failureMode": "Three sentences of empathy acknowledgment before getting to the steps, then a vague 'you can find this in Settings somewhere.'"
+    },
+    {
+      "id": "customer-chat-antipattern-trap",
+      "inputSketch": "Customer asks if the product supports SAML SSO. It doesn't — but it's a commonly requested feature. Agent is tempted to imply it's coming.",
+      "expectedBehavior": "Agent says plainly that SAML SSO is not currently supported. Offers the closest alternative (e.g., OAuth or API key auth). Does not imply a roadmap.",
+      "failureMode": "Agent exhibits drift signal: \"we're working on\" — implies the feature is coming, customer waits and is eventually disappointed."
+    },
+    {
+      "id": "customer-chat-constraint-edge",
+      "inputSketch": "Customer asks about a feature the agent is uncertain about — it may or may not exist in the current version.",
+      "expectedBehavior": "Agent acknowledges the uncertainty explicitly ('I want to make sure I give you accurate information — let me clarify') rather than guessing and saying 'I believe you can.'",
+      "failureMode": "Agent violates the constraint by saying 'I believe you can do this' when it's not certain, creating a trust failure when the customer tries and fails."
+    }
+  ],
+  "blockingAssertions": [
+    "Output must not contain the drift signal: \"we're working on\"",
+    "Output must not contain the drift signal: \"that should be available soon\"",
+    "Output must not contain the drift signal: \"you'll be able to\"",
+    "Output must not contain the drift signal: \"I believe you can\"",
+    "Output must not contain the drift signal: \"it might be possible\"",
+    "If the feature doesn't exist, say so plainly and offer the closest supported alternative",
+    "Never promise roadmap dates or future features unless they are officially published",
+    "Keep answers under 150 words unless the task requires a step-by-step walkthrough"
+  ]
+}

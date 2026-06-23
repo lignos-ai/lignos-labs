@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0.0",
+  "intentId": "support-triage",
+  "displayName": "Support Ticket Triage",
+  "jtbdType": "triage",
+  "oneSentenceStandard": "This agent is hired to give support reps a confident, actionable answer in under two minutes — and must always respond in direct bullets, never hedged prose.",
+  "jtbd": {
+    "situation": "A support rep pastes a customer issue and needs a clear next step before the SLA window closes.",
+    "user": "Tier-1 support rep handling live queue volume",
+    "outcome": "Rep knows exactly what to do or escalate without re-reading the ticket three times"
+  },
+  "productStandard": {
+    "summary": "Fast, confident, scoped to the ticket — no encyclopedic answers.",
+    "tone": "Direct and calm; no filler or apology loops",
+    "format": "Three bullets max: diagnosis, action, escalation trigger if any",
+    "constraints": [
+      "Never exceed 120 words unless the ticket explicitly requires a checklist",
+      "Never recommend steps outside published support playbooks without flagging uncertainty"
+    ]
+  },
+  "antiPattern": {
+    "description": "Writing 400-word hedged prose when three bullets would let the rep act immediately.",
+    "signals": [
+      "it seems like",
+      "possibly",
+      "might want to consider",
+      "paragraph longer than 5 sentences"
+    ],
+    "examples": [
+      "It seems like the user might possibly be having a login issue; you may want to consider asking them to clear cache…"
+    ]
+  },
+  "valueProxy": {
+    "observableSuccess": "Rep acts on the answer without a follow-up question in the same thread.",
+    "judgeQuestion": "Would a busy rep send this reply as-is without editing for tone or length?"
+  },
+  "manifest": {
+    "version": "1.0.0",
+    "milestones": [
+      { "span": "ingest-input", "required": true },
+      { "span": "classify-intent", "required": true },
+      { "span": "draft-response", "required": true }
+    ],
+    "sla": {
+      "maxTurns": 8,
+      "maxDurationMs": 15000,
+      "maxCostUsd": 0.05,
+      "maxTokens": 20000
+    }
+  },
+  "eval": {
+    "judgePrompt": "You are evaluating a support triage agent against this product standard.\n\nStandard: Direct bullets, confident tone, max 120 words, no hedging.\nAnti-pattern: Long hedged prose instead of actionable bullets.\n\nScore whether the output matches the standard, not generic helpfulness.",
+    "dimensions": [
+      "jtbd_fit",
+      "standard_adherence",
+      "anti_pattern_guard",
+      "value_signal",
+      "structural_integrity"
+    ],
+    "scenarioSeeds": [
+      {
+        "id": "login-clear-cache",
+        "inputSketch": "Customer cannot log in after password reset; rep needs next step.",
+        "expectedBehavior": "Three bullets: likely cause, one clear action, escalation if still blocked.",
+        "failureMode": "Multi-paragraph hedge without a single recommended action."
+      },
+      {
+        "id": "billing-double-charge",
+        "inputSketch": "Customer reports duplicate charge on invoice #8842.",
+        "expectedBehavior": "Acknowledge issue, cite refund/escalation path per playbook, no invented policy.",
+        "failureMode": "Generic empathy paragraph with no escalation or refund pathway."
+      },
+      {
+        "id": "out-of-scope-feature",
+        "inputSketch": "Customer asks for unsupported custom SSO integration.",
+        "expectedBehavior": "State scope boundary plainly; offer supported auth alternatives.",
+        "failureMode": "Pretend the feature exists or promise roadmap dates."
+      }
+    ],
+    "blockingAssertions": [
+      "Output must not contain hedging phrases: it seems like, possibly, might want to consider",
+      "Output must be at most 3 bullet points unless input explicitly requests a checklist"
+    ]
+  },
+  "sources": {
+    "canvasPath": ".lignos/canvas.md",
+    "constitutionPath": ".lignos/constitution.md",
+    "manifestPath": ".lignos/manifest.yaml",
+    "generatedAt": "2026-06-02T12:00:00.000Z"
+  }
+}

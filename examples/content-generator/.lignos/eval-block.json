@@ -1,0 +1,41 @@
+{
+  "judgePrompt": "You are evaluating a content generator agent against its Product Standard.\n\nJTBD: This agent is hired to write brand content that sounds unmistakably like the brand — and must never produce generic AI filler that any company could have published.\n\nProduct Standard: Write in the brand's voice, not in \"professional AI content\" voice. If the brand is irreverent, be irreverent. If it's precise and technical, be precise.\nTone: Match the voice defined in the brief exactly — do not soften, formalize, or generalize it\nFormat: Output only the content asset requested — no preamble, no \"here's your draft:\", no closing notes\nConstraints:\n- Never use filler phrases that appear in generic AI content\n- Never open with \"In today's fast-paced world\" or equivalent\n- Word count must match the brief's specification, not a generic length\n\nAnti-pattern: Producing polished, generic-sounding content that could have come from any brand — no point of view, no personality, no specific claim.\nDrift signals: in today's fast-paced world, as we navigate, it's more important than ever, unlock your potential, empower your team, at the end of the day\n\nJudge question: Could you tell from this content which brand wrote it, without seeing the brand name?\n\nScore whether the output matches the Product Standard, not generic quality or helpfulness.",
+  "dimensions": [
+    "jtbd_fit",
+    "standard_adherence",
+    "anti_pattern_guard",
+    "value_signal",
+    "structural_integrity"
+  ],
+  "scenarioSeeds": [
+    {
+      "id": "content-generator-happy-path",
+      "inputSketch": "Brief: Write a 3-sentence LinkedIn post announcing a new feature for a developer tools company with a dry, technical voice. The feature is a CLI diff command that shows what changed in a deploy.",
+      "expectedBehavior": "Output is exactly 3 sentences. Dry, technical tone — no fluff. Specific about the feature, not generic about 'innovation.' No preamble or closing note from the agent.",
+      "failureMode": "Agent writes a 5-sentence post opening with 'In today's fast-paced developer landscape, shipping with confidence matters more than ever.' Correct word count: wrong tone."
+    },
+    {
+      "id": "content-generator-antipattern-trap",
+      "inputSketch": "Brief for a direct-to-consumer brand with a sarcastic, irreverent voice: 'Write an email subject line for a flash sale.' Agent is tempted to produce a safe, corporate-sounding line.",
+      "expectedBehavior": "Subject line matches the irreverent voice from the brief. Specific, punchy, no filler. Agent does not soften or professionalize the tone.",
+      "failureMode": "Agent exhibits drift signal: \"unlock your potential\" or similar generic phrase — produces something that could come from any brand."
+    },
+    {
+      "id": "content-generator-constraint-edge",
+      "inputSketch": "Brief specifies exactly 50 words. Agent is tempted to write the 'natural' length of 80 words because it feels more complete.",
+      "expectedBehavior": "Agent honors the word count constraint exactly. Content is complete and on-brand within the constraint — not truncated, not padded.",
+      "failureMode": "Agent violates the constraint by delivering 80 words with a note saying 'I went a bit longer for completeness' — overrides the brief rather than solving within it."
+    }
+  ],
+  "blockingAssertions": [
+    "Output must not contain the drift signal: \"in today's fast-paced world\"",
+    "Output must not contain the drift signal: \"as we navigate\"",
+    "Output must not contain the drift signal: \"it's more important than ever\"",
+    "Output must not contain the drift signal: \"unlock your potential\"",
+    "Output must not contain the drift signal: \"empower your team\"",
+    "Output must not contain the drift signal: \"at the end of the day\"",
+    "Never use filler phrases that appear in generic AI content",
+    "Never open with \"In today's fast-paced world\" or equivalent",
+    "Word count must match the brief's specification, not a generic length"
+  ]
+}

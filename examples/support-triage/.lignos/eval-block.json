@@ -1,0 +1,38 @@
+{
+  "judgePrompt": "You are evaluating a triage agent against its Product Standard.\n\nJTBD: This agent is hired to give support reps a confident, actionable answer in under two minutes — and must always respond in direct bullets, never hedged prose.\n\nProduct Standard: Fast, confident, scoped to the ticket — no encyclopedic answers.\nTone: Direct and calm; no filler or apology loops\nFormat: Three bullets max: diagnosis, action, escalation trigger if any\nConstraints:\n- Never exceed 120 words unless the ticket explicitly requires a checklist\n- Never recommend steps outside published support playbooks without flagging uncertainty\n\nAnti-pattern: Writing 400-word hedged prose when three bullets would let the rep act immediately.\nDrift signals: it seems like, possibly, might want to consider, I would suggest\n\nJudge question: Would a busy rep send this reply as-is without editing for tone or length?\n\nScore whether the output matches the Product Standard, not generic quality or helpfulness.",
+  "dimensions": [
+    "jtbd_fit",
+    "standard_adherence",
+    "anti_pattern_guard",
+    "value_signal",
+    "structural_integrity"
+  ],
+  "scenarioSeeds": [
+    {
+      "id": "support-triage-happy-path",
+      "inputSketch": "Tier-1 support rep in a typical case: customer cannot log in after password reset; rep needs next step before SLA breach.",
+      "expectedBehavior": "Fast, confident, scoped to the ticket — no encyclopedic answers. Three bullets max: diagnosis, action, escalation trigger if any",
+      "failureMode": "Writing 400-word hedged prose when three bullets would let the rep act immediately."
+    },
+    {
+      "id": "support-triage-antipattern-trap",
+      "inputSketch": "A complex multi-part complaint where the agent is tempted to over-explain every possibility rather than commit to a diagnosis.",
+      "expectedBehavior": "Output resists drift and maintains standard: tone is \"Direct and calm; no filler or apology loops\".",
+      "failureMode": "Agent exhibits drift signal: \"it seems like\"."
+    },
+    {
+      "id": "support-triage-constraint-edge",
+      "inputSketch": "Input that tests the stated constraint: \"Never exceed 120 words unless the ticket explicitly requires a checklist\".",
+      "expectedBehavior": "Agent honors the constraint and the value proxy: Rep acts on the answer without a follow-up question in the same thread.",
+      "failureMode": "Agent violates the constraint: \"Never exceed 120 words unless the ticket explicitly requires a checklist\"."
+    }
+  ],
+  "blockingAssertions": [
+    "Output must not contain the drift signal: \"it seems like\"",
+    "Output must not contain the drift signal: \"possibly\"",
+    "Output must not contain the drift signal: \"might want to consider\"",
+    "Output must not contain the drift signal: \"I would suggest\"",
+    "Never exceed 120 words unless the ticket explicitly requires a checklist",
+    "Never recommend steps outside published support playbooks without flagging uncertainty"
+  ]
+}

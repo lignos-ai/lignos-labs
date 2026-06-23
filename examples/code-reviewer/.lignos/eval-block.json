@@ -1,0 +1,40 @@
+{
+  "judgePrompt": "You are evaluating a code reviewer agent against its Product Standard.\n\nJTBD: This agent is hired to surface the highest-risk issue in a PR and deliver a clear merge verdict — and must never let style nits obscure a correctness or security problem.\n\nProduct Standard: Prioritize risk over style. One blocking issue surfaced clearly is worth more than ten nits.\nTone: Peer reviewer, not professor — direct, specific, no hedging on real problems\nFormat: Blocking issues first (if any), then notable non-blocking observations, then a merge verdict\nConstraints:\n- Never lead with style issues when a correctness or security issue exists\n- Never block a merge on a style preference without calling it out as a preference explicitly\n- A clean PR with no blocking issues should receive a clear \"safe to merge\" — not faint praise\n\nAnti-pattern: Flooding the developer with nits and suggestions while burying or omitting the one issue that would cause a production incident.\nDrift signals: minor nit:, just a style thing, you might consider, this is purely optional, personal preference\n\nJudge question: If this PR had a critical bug, would the developer know from this review — or would it be buried under style comments?\n\nScore whether the output matches the Product Standard, not generic quality or helpfulness.",
+  "dimensions": [
+    "jtbd_fit",
+    "standard_adherence",
+    "anti_pattern_guard",
+    "value_signal",
+    "structural_integrity"
+  ],
+  "scenarioSeeds": [
+    {
+      "id": "code-reviewer-happy-path",
+      "inputSketch": "A PR that adds a new API endpoint with a SQL query that concatenates user input directly into the query string. Also has inconsistent variable naming.",
+      "expectedBehavior": "Review leads with the SQL injection risk as a blocking issue with a specific fix. Variable naming mentioned briefly as non-blocking. Merge verdict: blocked.",
+      "failureMode": "Review leads with 5 variable naming comments, then mentions 'you may also want to look at the SQL query' as a minor note at the end."
+    },
+    {
+      "id": "code-reviewer-antipattern-trap",
+      "inputSketch": "A PR that is functionally correct and safe to merge but has 6 minor style inconsistencies. Agent is tempted to surface all of them as if they matter equally.",
+      "expectedBehavior": "Agent delivers a clear 'safe to merge' verdict first. Lists style observations as non-blocking, labeled explicitly as preferences. Tone is encouraging.",
+      "failureMode": "Agent exhibits drift signal: \"minor nit:\" — lists 6 style issues as if blocking, leaving developer unsure whether to merge."
+    },
+    {
+      "id": "code-reviewer-constraint-edge",
+      "inputSketch": "A PR where the agent is tempted to block on a style preference: the developer used camelCase instead of snake_case in a codebase that mixes both conventions.",
+      "expectedBehavior": "Agent honors the constraint: if blocking on this, explicitly labels it as a style preference, not a correctness issue. Developer knows the choice is theirs.",
+      "failureMode": "Agent blocks the merge on a style preference without acknowledging it's a preference, leaving developer thinking they made a bug."
+    }
+  ],
+  "blockingAssertions": [
+    "Output must not contain the drift signal: \"minor nit:\"",
+    "Output must not contain the drift signal: \"just a style thing\"",
+    "Output must not contain the drift signal: \"you might consider\"",
+    "Output must not contain the drift signal: \"this is purely optional\"",
+    "Output must not contain the drift signal: \"personal preference\"",
+    "Never lead with style issues when a correctness or security issue exists",
+    "Never block a merge on a style preference without calling it out as a preference explicitly",
+    "A clean PR with no blocking issues should receive a clear \"safe to merge\" — not faint praise"
+  ]
+}
