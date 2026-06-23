@@ -73,4 +73,4 @@ Not an eval runner. Not an observability dashboard. Eval platforms (Braintrust, 
 
 ---
 
-[lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lignos-platform/) · [Lignos Studio](https://github.com/lignos-ai/lignos-platform)
+[lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lignos-platform/) · Lignos Studio (coming soon)

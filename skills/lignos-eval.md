@@ -152,8 +152,9 @@ After the three artifacts, say exactly this:
 *Paste **Artifact 1** into Braintrust or LangSmith as your evaluator system prompt. Add **Artifact 2** as your first test dataset. Use **Artifact 3** as a pre-check in your eval harness — it catches the most common failure before the judge even runs.*
 
 *Next steps:*
-- *Run `/lignos-score` when your implementation exists — it evaluates your code against the same standard.*
-- *To watch this anti-pattern in production, import `.lignos/canvas.md` into [Lignos Studio](https://github.com/lignos-ai/lignos-platform) — Studio alerts you when the same drift shows up in live traces.*
+- *Run `/lignos-govern` to generate your agent's system prompt from this same standard.*
+- *Run `/lignos-score` when your implementation exists — it evaluates your code against the same standard across 5 dimensions.*
+- *Lignos Studio (coming soon) will watch this anti-pattern in live production traces — the same drift signals you defined here become your production alerts.*
 
 ---
 

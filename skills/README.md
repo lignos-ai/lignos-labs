@@ -54,21 +54,12 @@ The `docs/skills/` folder has human-readable versions of each skill. Open the re
 ### Prerequisites
 
 - An AI coding agent: [Claude Code](https://github.com/anthropics/claude-code), Cursor, Codex, or similar
-- Lignos Studio (optional — for production drift monitoring only): `npm run studio` from the `lignos-platform` `mcp-server/`
 
-### After eval — open Studio (optional)
+### Production monitoring — Lignos Studio (coming soon)
 
-When `.lignos/` is complete, import into Studio to verify production alignment:
+After your evals are running, Lignos Studio will let you import `.lignos/canvas.md` and watch the same anti-pattern in live production traces — the drift signals you defined in the canvas become your production alerts.
 
-1. Run `npm run studio` from `mcp-server/`
-2. Open **http://127.0.0.1:4000?standard=ready&from=labs** (or Agent Impact → import)
-3. Upload `canvas.md` (+ `manifest.yaml` and `constitution.md` if you ran govern)
-4. **Connect** — pick the path that matches your situation (any one completes the step):
-   - **Path A — Eval export:** Export judge + seeds to Braintrust/LangSmith (Hook #2; no OTLP required)
-   - **Path B — Prod traces:** Link your LangSmith project via `POST /api/intent/link-traces` — drift scored against your imported standard
-   - **Path C — Local audit:** Point OTEL at `http://localhost:4318` when running agents on this machine
-
-The handoff URL keeps your place in the journey — Studio highlights import and pins your one-sentence standard after upload.
+Sign up at [lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lignos-platform/) to be notified at launch.
 
 ## When to run each skill
 
