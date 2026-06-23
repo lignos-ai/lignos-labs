@@ -1,9 +1,15 @@
 ---
-description: Generate a copy-pasteable judge prompt, scenario seeds, and blocking assertion from your .lignos/canvas.md. No server required — paste the output directly into Braintrust or LangSmith.
+description: Generate a judge prompt, scenario seeds, and blocking assertion from .lignos/canvas.md — or bring a real output that surprised you and add it as a named scenario.
 argument-hint: "[path to canvas — defaults to .lignos/canvas.md]"
 ---
 
-You are running the Lignos Eval Export skill. Your job is to read the agent's Intent Canvas and produce a complete, ready-to-paste eval block in the chat: a judge prompt, scenario seeds, and a blocking assertion. The user should be able to paste these directly into Braintrust or LangSmith in under two minutes.
+You are running the Lignos Eval skill. It has two modes:
+
+**Generate mode (default):** Read `.lignos/canvas.md` and produce a complete eval block — judge prompt, scenario seeds, and blocking assertion — ready to paste into any eval platform or LLM chat.
+
+**Intake mode:** The user brings a real output that surprised them — something that felt wrong, or unexpectedly right. Evaluate it live, name the failure mode, and capture it as a new named scenario they can add to their seed list.
+
+Watch for intake mode: the user pastes an agent output, says "this felt off," "this came out wrong," or similar. Switch to Step 5 instead of generating a new eval block.
 
 No server. No install. Everything comes from `.lignos/canvas.md`.
 
@@ -145,16 +151,56 @@ BLOCK_ON = [
 
 **Step 4 — Close**
 
-After the three artifacts, say exactly this:
+After the three artifacts, say:
+
+*"Paste **Artifact 1** into Braintrust or LangSmith as your evaluator system prompt. Add **Artifact 2** as your first test dataset. Use **Artifact 3** as a pre-check — it catches the most common failure before the judge runs.*
+
+*As you use your agent, you'll find outputs that surprise you — things that feel wrong but don't match these seeds. Bring them here. I'll evaluate the output live and help you add it as a named scenario so your eval set grows with your actual experience."*
 
 ---
 
-*Paste **Artifact 1** into Braintrust or LangSmith as your evaluator system prompt. Add **Artifact 2** as your first test dataset. Use **Artifact 3** as a pre-check in your eval harness — it catches the most common failure before the judge even runs.*
+**Step 5 — Intake mode (living eval)**
 
-*Next steps:*
-- *Run `/lignos-govern` to generate your agent's system prompt from this same standard.*
-- *Run `/lignos-score` when your implementation exists — it evaluates your code against the same standard across 5 dimensions.*
-- *Lignos Studio (coming soon) will watch this anti-pattern in live production traces — the same drift signals you defined here become your production alerts.*
+This step activates when the user brings a real output that surprised them — something that felt wrong or unexpectedly right — instead of asking to regenerate the eval block.
+
+**1. Evaluate it**
+
+Apply the judge prompt from Step 3 mentally (blocking assertion check first, then full judge). Return:
+
+`PASS` or `FAIL` — one sentence explaining exactly what you observed.
+
+**2. Name the failure mode**
+
+If FAIL, ask: *"What would you call this in one phrase — something like 'missed the urgency signal' or 'over-qualified the answer'?"*
+
+If they don't have a name, suggest one based on what you saw drift.
+
+**3. Capture it as a new scenario**
+
+Output a formatted seed they can add to their seed list:
+
+```json
+{
+  "id": "seed-[next available number]",
+  "label": "[failure mode name]",
+  "input": "[the input that produced this output — ask the user if not provided]",
+  "expectedBehavior": "[what a passing output would have done instead]",
+  "antiPatternTrigger": true,
+  "failSignal": "[the specific phrase or pattern that caused the FAIL, or null if it was a judgment issue]",
+  "discoveredInProduction": true,
+  "notes": "[one sentence on what context tends to trigger this pattern]"
+}
+```
+
+**4. Check for a canvas gap**
+
+If the failure revealed a drift signal not currently in `canvas.md`'s Anti-Pattern bullet list, say:
+
+*"This suggests a new drift signal your canvas doesn't cover yet: '[signal]'. Consider adding it to `.lignos/canvas.md` so future evals catch it automatically. Run `/lignos-eval` again after updating the canvas — it'll rebuild the blocking assertion with the new signal included."*
+
+If the existing signals already covered it:
+
+*"Your existing standard caught this — you didn't have a gap, just incomplete seed coverage. Add this scenario to your dataset to improve coverage of that signal."*
 
 ---
 
@@ -163,5 +209,7 @@ After the three artifacts, say exactly this:
 - Do not generate a generic judge prompt. Every line must trace back to the canvas — never invent standard, tone, constraints, or anti-pattern.
 - Do not omit the signal phrases from Artifact 1 — they are the most important lines in the judge prompt.
 - Do not use placeholder scenario seeds ("User asks a question"). Derive them from the actual JTBD domain.
-- Do not generate more than 5 seeds — quality over quantity.
+- Do not generate more than 5 seeds in generate mode — quality over quantity.
+- Do not auto-update `canvas.md` in intake mode — the user should consciously decide whether a new signal belongs in their standard.
+- Do not generate multiple new seeds from one surprising output — one output, one named scenario.
 - Do not mention spans, traces, OTLP, or telemetry in your output.

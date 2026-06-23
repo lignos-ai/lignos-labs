@@ -99,7 +99,7 @@ Sign up at [lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lig
 
 **Canvas** — before writing any code. Replaces "what are the requirements?" with "what is the exact standard this agent must maintain?" Outputs the eval block automatically, then runs your agent's first Taste Test live in chat — paste one output in, get PASS or FAIL back before the session closes.
 
-**Eval** — any time after canvas. Regenerates the judge prompt, scenario seeds, and blocking assertion from `.lignos/canvas.md`. Paste into Braintrust or LangSmith in under two minutes.
+**Eval** — any time your agent surprises you. Regenerates the eval block from canvas, or bring a real output that felt wrong — it evaluates it live and captures it as a named scenario so your seed set grows with your actual experience.
 
 **Govern** — when you're ready to build. Produces the system prompt you paste into your agent, the governance contract for Studio, and a `CLAUDE.md` block so every future session knows the standard.
 

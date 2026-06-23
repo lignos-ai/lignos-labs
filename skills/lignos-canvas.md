@@ -319,6 +319,8 @@ After the live eval result (PASS or FAIL), say:
 
 *Your judge prompt lives in `.lignos/canvas.md`. Any time you want to check if your agent still sounds like you, paste an output here and I'll evaluate it.*
 
+*One more thing: the best standards are built from real surprises. As you ship and use your agent, you'll find outputs that feel wrong in ways you didn't anticipate when you wrote this canvas. When that happens — bring the output to `/lignos-eval`. It'll evaluate it live and help you capture it as a named scenario, so your eval set grows with your actual experience instead of staying frozen at what you imagined today.*
+
 *Run `/lignos-govern` when you're ready to generate your agent's system prompt and governing contract."*
 
 ---
