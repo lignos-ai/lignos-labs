@@ -1,8 +1,8 @@
 # Lignos Labs
 
-**Define what "good" means for your agent — once. Carry it from V0 → eval → production.**
+**Turn your agent's requirements into evals — before you build. Ship something your team can actually trust.**
 
-Lignos Labs is the free, open community layer of [Lignos](https://lignos-ai.github.io/lignos-platform/). No account. No install. Answer four questions and get a judge prompt your eval platform can run against — works in any AI coding environment.
+Most teams build agents first and discover what "good" means after the first production failure. Lignos flips that cycle. Answer four questions about what your agent is hired to do and you get a targeted judge prompt, scenario seeds, and a live eval run — all derived from your requirements, in the same session. No account. No install. Works in any AI coding environment.
 
 ---
 
@@ -74,7 +74,11 @@ Full install + usage for all environments: [`skills/README.md`](skills/README.md
 
 ## What Lignos is not
 
-Not an eval runner. Not an observability dashboard. Eval platforms (Braintrust, LangSmith) run your tests — Lignos authors the standard those tests run against, and keeps it consistent from V0 through production.
+Not an error tracker. Not something you wire up after your agent breaks.
+
+Reactive evals are built from failures you already had — useful, but slow. You find out the agent drifted when a user complains, then reverse-engineer what the standard should have been. Lignos builds the eval standard from requirements before the agent exists, so the first failure you catch is in a test, not in production.
+
+Eval platforms (Braintrust, LangSmith, Promptfoo) run your tests — Lignos authors the standard those tests measure against, derived from what the agent is hired to do.
 
 ---
 
