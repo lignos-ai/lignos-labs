@@ -1,5 +1,5 @@
 ---
-description: Generate your Agent Constitution and LignosManifest from the Intent Canvas. Reads .lignos/canvas.md and writes constitution.md + manifest.yaml — the governing documents for development and evaluation.
+description: Generate your Agent Constitution from the Intent Canvas. Reads .lignos/canvas.md and writes .lignos/constitution.md — the system prompt and governing document for your agent.
 argument-hint: "[agent-name]"
 ---
 
@@ -45,9 +45,7 @@ Move directly to generation. Do not ask for confirmation.
 
 ---
 
-## Step 4 — Generate both artifacts
-
-### Constitution
+## Step 3 — Generate the constitution
 
 Write `constitution.md` using this structure. Every section must be derived directly from the canvas — do not invent values or non-negotiables that aren't grounded in what the PM said.
 
@@ -122,7 +120,7 @@ This agent operates under a Lignos Agent Constitution. Evaluate every output aga
 
 ---
 
-## Step 5 — Show the system prompt and confirm
+## Step 4 — Show the system prompt and confirm
 
 Show the user the full system prompt section from `constitution.md`. Then ask: *"Does this capture your standard accurately? Say yes to write the files, or tell me what to adjust."*
 
@@ -130,7 +128,7 @@ Apply any corrections before writing.
 
 ---
 
-## Step 6 — Write the file
+## Step 5 — Write the file
 
 Write to `.lignos/constitution.md`.
 
@@ -138,13 +136,23 @@ If the file already exists, show what changed (the one-sentence standard, at min
 
 ---
 
-## Step 7 — Ask how they're building the agent
+## Step 6 — Find where the system prompt goes
 
-Before writing project context, ask:
+First, scan the project for an existing system prompt. Look for these patterns in `.py`, `.ts`, and `.js` files:
 
-*"One quick question — how are you calling Claude in this agent? For example: Claude API directly (Python/JS), Claude Code, Cursor, or something else? I'll tell you exactly where the system prompt goes."*
+- `system=` parameter in an API call
+- `"role": "system"` in a messages array
+- `SystemMessage(` (LangChain)
+- `SYSTEM_PROMPT` constant
+- Common entry point files: `main.py`, `agent.py`, `app.py`, `chain.py`, `prompts.py`, `handler.py`
 
-Wait for their answer. Use it to tailor the close message in Step 8.
+If you find something, say: *"I found what looks like your system prompt in `[file]` at line [N]. Update it with the text under `## System Prompt` in `.lignos/constitution.md`."*
+
+If nothing is found, note that briefly and ask: *"How are you calling Claude in this project — Claude API (Python/JS), Claude Code, Cursor, or something else? I'll show you exactly where the system prompt goes."*
+
+If something was found, still ask the stack question to give precise placement instructions.
+
+Wait for their answer. Use it to tailor the close in Step 7.
 
 Then write the Lignos context block to keep the standard in context for future sessions.
 
@@ -165,22 +173,25 @@ Never: [signal phrase 1] · [signal phrase 2] · [signal phrase 3] (add more if 
 
 ---
 
-## Step 8 — Close
+## Step 7 — Close
 
-Confirm all files are written. Then give placement instructions specific to their answer from Step 7:
+Confirm all files are written. Then give placement instructions specific to their answer from Step 6:
 
 **If Claude API (Python or JS):**
-*"Open the file where you make your `client.messages.create()` call. Set the `system` parameter to the text under `## System Prompt` in `.lignos/constitution.md`. That's it — your agent now runs under the standard you defined.*
+*"Open the file where you make your `client.messages.create()` call — [name the file if you found it in Step 6, otherwise say 'your entry point']. Copy the text under `## System Prompt` in `.lignos/constitution.md` and set it as your `system` parameter:"*
 
 ```python
+# copy the text under ## System Prompt in .lignos/constitution.md
+SYSTEM_PROMPT = """..."""
+
 response = client.messages.create(
     model="claude-opus-4-8",
-    system=open(".lignos/constitution.md").read().split("## System Prompt")[1].split("---")[0].strip(),
+    system=SYSTEM_PROMPT,
     messages=[{"role": "user", "content": user_input}]
 )
 ```
 
-*Or paste the text directly — you don't need to read it from file."*
+*"Your agent now runs under the standard you defined."*
 
 **If Claude Code (running skills like this one):**
 *"`CLAUDE.md` is already written — every Claude Code session in this project now starts with your standard in context. The system prompt in `constitution.md` is your reference; Claude Code reads `CLAUDE.md` automatically.*
@@ -188,9 +199,13 @@ response = client.messages.create(
 *If you're also building a Claude Code agent or MCP tool, set the system prompt in your tool's definition file."*
 
 **If Cursor:**
-*"Copy the text under `## System Prompt` in `.lignos/constitution.md` into `.cursorrules` at your project root. Cursor loads `.cursorrules` automatically for every session.*
 
-*The `CLAUDE.md` block is also written — if you switch to Claude Code on this project, the same standard is already there."*
+Check whether `.cursorrules` already exists at the project root.
+
+- If it exists: *"Your `.cursorrules` is already set up — add the text under `## System Prompt` in `.lignos/constitution.md` at the top of that file. Cursor loads it automatically every session."*
+- If it does not exist: offer to write `.cursorrules` directly with the system prompt text. *"I'll write `.cursorrules` now with your agent's standard — Cursor will pick it up automatically."* Write it, confirm.
+
+Then: *"The `CLAUDE.md` block is also written — if you switch to Claude Code on this project, the same standard is already there."*
 
 **If another framework or unsure:**
 *"The text under `## System Prompt` in `.lignos/constitution.md` is a ready-to-paste system prompt. Wherever your framework lets you set the starting instructions for the LLM — the first message, the system role, the agent config — paste it there. If you tell me your specific stack I can be more precise."*

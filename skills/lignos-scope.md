@@ -25,14 +25,6 @@ Do not proceed until the user confirms.
 
 `.lignos/canvas.md` must exist. Run `/lignos-canvas` first, then `/lignos-govern` to produce the constitution. This skill generates the manifest and instrumentation code on top of that.
 
-## What it does
-
-1. Reads `.lignos/canvas.md` for the JTBD, agent name, one-sentence standard, and session characteristics.
-2. Generates `.lignos/manifest.yaml` — the LignosManifest that Lignos Studio will verify production sessions against.
-3. Asks which code style fits your codebase (if not passed as an argument).
-4. Produces a complete instrumentation snippet with every milestone from the manifest as a call.
-5. Shows the three `.env` variables to add.
-
 ---
 
 ## Step 1 — Read the canvas
@@ -165,7 +157,7 @@ async def milestone_1_fn(self, ...):
     ...
 ```
 
-Also show the three `.env` lines to add:
+Also show the three `.env` lines to add — these are for when Lignos Studio launches. Add them now so the integration is ready to activate:
 
 ```
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318

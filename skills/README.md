@@ -110,10 +110,9 @@ When you start a skill, it will say: *"Starting in `<cwd>` — is this the corre
 
 **Eval** — any time your agent surprises you. Regenerates the eval block from canvas, or bring a real output that felt wrong — it evaluates it live and captures it as a named scenario so your seed set grows with your actual experience.
 
-**Govern** — when you're ready to build. Produces the system prompt you paste into your agent, the governance contract for Studio, and a `CLAUDE.md` block so every future session knows the standard.
+**Govern** — when you're ready to build. Scans the project for your existing system prompt location, generates the Constitution, writes it to `.lignos/constitution.md`, and adds a `CLAUDE.md` block so every future session knows the standard.
 
-
-**Scope** *(optional — Studio prep)* — generates `intent_scope` and `milestone` instrumentation code for when Lignos Studio launches. Not needed to run the other four skills.
+**Scope** *(optional — Studio prep)* — generates `manifest.yaml` and `intent_scope` instrumentation code for when Lignos Studio launches. Not needed to run the other three skills.
 
 ## Artifacts produced
 
@@ -123,6 +122,6 @@ All generated files live under `.lignos/` at the project root:
 |------|-------------|---------|
 | `.lignos/canvas.md` | `/lignos-canvas` | The authoritative intent definition — JTBD, standard, anti-pattern, value proxy |
 | `.lignos/constitution.md` | `/lignos-govern` | Agent Constitution + ready-to-paste system prompt |
-| `.lignos/manifest.yaml` | `/lignos-govern` | LignosManifest — Lignos Studio (coming soon) will verify every session against this |
+| `.lignos/manifest.yaml` | `/lignos-scope` | LignosManifest — Lignos Studio (coming soon) will verify every session against this |
 
 **Commit `.lignos/` to version control.** These are governing documents, not build artifacts — treat them the same way you'd commit a `CLAUDE.md` or `README.md`. Do not add `.lignos/` to `.gitignore`.

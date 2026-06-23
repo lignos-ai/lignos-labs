@@ -11,15 +11,7 @@ You are running the Lignos Intent Canvas workflow. Your job is to help the user 
 
 Print the current working directory. Say: *"Starting in `<cwd>` — is this the correct project? Reply yes to continue, or tell me the right folder."*
 
-Do not proceed until the user confirms.
-
----
-
-**Step 0 — Greet**
-
-Tell the user what this session produces in one sentence. Example: *"We're going to define the business intent behind your agent — what it's hired to do, what great looks like, and how you'll know it drifted. This becomes the standard everything else is measured against."*
-
-Do not mention OTLP, traces, manifests, or technical terms yet.
+Do not proceed until the user confirms. Then move directly to Step 1 — no preamble.
 
 ---
 

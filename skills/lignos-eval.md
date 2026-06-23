@@ -161,9 +161,9 @@ BLOCK_ON = [
 
 After the three artifacts, say:
 
-*"Paste **Artifact 1** into Braintrust or LangSmith as your evaluator system prompt. Add **Artifact 2** as your first test dataset. Use **Artifact 3** as a pre-check — it catches the most common failure before the judge runs.*
+*"**Artifact 1** → paste into Braintrust, LangSmith, or any LLM chat as the judge system prompt. **Artifact 2** → your first test dataset. **Artifact 3** → run as a pre-check before the judge; any match is an automatic FAIL.*
 
-*As you use your agent, you'll find outputs that surprise you — things that feel wrong but don't match these seeds. Bring them here. I'll evaluate the output live and help you add it as a named scenario so your eval set grows with your actual experience."*
+*When a real output surprises you — something that felt wrong, or unexpectedly right — bring it here. I'll evaluate it live and capture it as a named scenario."*
 
 ---
 
