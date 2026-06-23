@@ -36,28 +36,33 @@ If `$ARGUMENTS` is set and non-empty, use it to override `agent_name`.
 
 ---
 
-## Step 2 — Classify the JTBD type
+## Step 2 — Infer session characteristics from canvas
 
-Silently classify the agent into one of the following types based on the JTBD and standard fields. Use the description that best matches what the agent produces and for whom.
+Read the JTBD, product standard, and format fields to answer these questions. Do not assign a named type — reason directly from what the canvas says.
 
-| Type | Signals in JTBD / standard |
-|---|---|
-| `triage` | Classifying, routing, prioritizing, or categorizing items (tickets, bugs, requests, leads) |
-| `summarization` | Condensing, distilling, or extracting key information from existing content |
-| `research` | Gathering, synthesizing, or reasoning over information from multiple sources |
-| `generation` | Creating new content — drafts, documents, emails, code, plans |
-| `customer-facing` | Directly communicating with or responding to end customers in real time |
-| `workflow` | Orchestrating multi-step processes or coordinating between systems |
+**Conversational or single-shot?**
+- Single-shot: the agent receives input and produces one output per run (scoring, summarization, classification)
+- Conversational: the agent exchanges multiple messages before completing (customer support, iterative research)
+- Signal: look at the Format field and JTBD outcome — does it describe one output or a back-and-forth?
 
-Use this type to select SLA defaults and milestone scaffolding (see Step 4).
+**Input/output volume?**
+- Lightweight: brief inputs, short structured outputs (score + reason, classification, routing)
+- Medium: moderate context needed, paragraph-length outputs (summaries, analyses)
+- Heavy: large inputs or long outputs (research reports, document generation, multi-step orchestration)
+
+**User-facing or internal?**
+- User-facing: the agent communicates directly with end customers
+- Internal: the agent produces artifacts consumed by a team or system
+
+Use these three signals to estimate SLA values and derive milestones in Step 4.
 
 ---
 
-## Step 3 — Tell the user what you detected
+## Step 3 — Tell the user what you found
 
-Say: *"I read your canvas. This looks like a [type] agent — [one sentence explaining why based on JTBD]. I'm generating your Constitution and governance contract now."*
+Say: *"I read your canvas. [One sentence describing what the agent does and for whom, based on JTBD — no type label.] Generating your Constitution and governance contract now."*
 
-Do not ask for confirmation of the type. Move directly to generation.
+Move directly to generation. Do not ask for confirmation.
 
 ---
 
@@ -74,7 +79,6 @@ Write `constitution.md` using this structure. Every section must be derived dire
 > and reasoning rules that guide this agent's judgment when no explicit rule exists.
 
 **Version:** 1.0.0
-**JTBD type:** [type]
 **Intent standard:** [one_sentence_standard from canvas]
 
 ---
@@ -141,29 +145,21 @@ This agent operates under a Lignos Agent Constitution. Evaluate every output aga
 
 ### Manifest
 
-Write `manifest.yaml` using the LignosManifest schema below. Use the SLA defaults for the detected JTBD type. Derive `intentId` as a lowercase kebab-case slug of the agent name (e.g., "Support Triage Agent" → "support-triage-agent").
+Write `manifest.yaml` using the LignosManifest schema below. Derive `intentId` as a lowercase kebab-case slug of the agent name (e.g., "Support Triage Agent" → "support-triage-agent").
 
-**SLA defaults by type:**
+**SLA — derive from canvas signals, do not use a lookup table:**
 
-| Type | maxTurns | maxDurationMs | maxCostUsd | maxTokens |
+| Signal | maxTurns | maxDurationMs | maxCostUsd | maxTokens |
 |---|---|---|---|---|
-| `triage` | 8 | 15000 | 0.05 | 20000 |
-| `summarization` | 6 | 20000 | 0.08 | 30000 |
-| `research` | 15 | 60000 | 0.25 | 80000 |
-| `generation` | 10 | 45000 | 0.15 | 50000 |
-| `customer-facing` | 8 | 10000 | 0.05 | 20000 |
-| `workflow` | 20 | 120000 | 0.50 | 100000 |
+| Single-shot (one input → one output) | 3–5 | 10000–20000 | 0.02–0.05 | 10000–25000 |
+| Conversational (back-and-forth) | 8–15 | 20000–60000 | 0.05–0.20 | 20000–60000 |
+| Heavy context / long output | 10–20 | 45000–120000 | 0.15–0.50 | 50000–100000 |
 
-**Milestone scaffolding by type:**
+Choose values that match what the canvas describes. If the JTBD describes a single structured output (a score, a summary, a classification), use the single-shot row as your starting point. If the Format field specifies something brief, lean toward the lower end. State your reasoning briefly in a comment in the YAML.
 
-| Type | Milestones (span name → required) |
-|---|---|
-| `triage` | ingest-input (required), classify-intent (required), generate-summary (required) |
-| `summarization` | ingest-content (required), extract-key-points (required), generate-output (required) |
-| `research` | clarify-query (required), gather-sources (required), synthesize-findings (required), generate-report (required) |
-| `generation` | understand-requirements (required), generate-draft (required), validate-output (optional) |
-| `customer-facing` | understand-intent (required), generate-response (required) |
-| `workflow` | parse-request (required), execute-steps (required), validate-outcome (optional) |
+**Milestones — derive from the JTBD flow, not a template:**
+
+Read the JTBD and imagine the 2–4 steps the agent actually takes to go from input to output. Name them as kebab-case span names. Mark the steps that must complete for the output to be valid as `required: true`; optional quality steps as `required: false`. Do not copy generic scaffold names — use names that describe this agent's actual work.
 
 **Manifest template:**
 
@@ -197,8 +193,8 @@ spec:
       - traceloop.entity.output
 
 # Intent standard (from canvas): [one_sentence_standard]
-# JTBD type: [type]
 # Generated: [today's date]
+# SLA: starting estimates — adjust after first real runs
 ```
 
 ---
@@ -209,7 +205,7 @@ Show the user:
 1. The full system prompt section from `constitution.md` (the most immediately useful part)
 2. The SLA block from `manifest.yaml`
 
-Then ask: *"The SLA defaults are based on [type] agent patterns — [maxTurns] turns, [maxDurationMs/1000]s, $[maxCostUsd] per run. Do these match your expectations, or do you want to adjust any of them before I write the files?"*
+Then ask: *"These SLA values are starting estimates based on your canvas — [one sentence explaining what you inferred, e.g., 'your agent produces a single structured output per run, so I used conservative single-shot defaults']. [maxTurns] turns, [maxDurationMs/1000]s, $[maxCostUsd] per run. Do these look right, or do you want to adjust before I write the files?"*
 
 If the user wants to adjust, update the values in the manifest before writing. If they say "looks good" or equivalent, write both files immediately.
 
