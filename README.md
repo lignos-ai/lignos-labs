@@ -60,7 +60,7 @@ Same as Cursor — each skill is self-contained plain text. Paste canvas skill f
 ```
 /lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path (no server)
        ↓
-/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio            ← full path
+/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio (coming soon)
 ```
 
 Full install + usage for all environments: [`skills/README.md`](skills/README.md)

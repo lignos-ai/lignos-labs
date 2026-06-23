@@ -7,7 +7,7 @@ Four Claude Code skills that walk an agent from idea to governed production. The
 ```
 /lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path
        ↓
-/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio            ← full path
+/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio (coming soon)
        ↓                  ↓                ↓
 constitution.md      code snippet       pass/fail
 manifest.yaml
@@ -67,7 +67,7 @@ Sign up at [lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lig
 
 **Eval** — right after canvas. Produces a judge prompt, scenario seeds, and a blocking assertion directly in the chat — no server. Paste into Braintrust or LangSmith in under two minutes.
 
-**Govern** — when you're ready to build. Produces the system prompt you paste into the agent and the contract Studio verifies against.
+**Govern** — when you're ready to build. Produces the system prompt you paste into the agent and the governance contract for when Lignos Studio launches.
 
 **Scope** — when the agent code exists and you are ready to instrument it. Produces a ready-to-paste code block with `intent_scope` and `milestone` calls.
 
@@ -81,4 +81,4 @@ All generated files live under `.lignos/` at the project root:
 |------|-------------|---------|
 | `.lignos/canvas.md` | `/lignos-canvas` | The authoritative intent definition — JTBD, standard, anti-pattern, value proxy |
 | `.lignos/constitution.md` | `/lignos-govern` | Agent Constitution + ready-to-paste system prompt |
-| `.lignos/manifest.yaml` | `/lignos-govern` | LignosManifest — Studio verifies every session against this |
+| `.lignos/manifest.yaml` | `/lignos-govern` | LignosManifest — Lignos Studio (coming soon) will verify every session against this |

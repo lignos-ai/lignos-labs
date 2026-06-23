@@ -91,16 +91,12 @@ OTEL_SERVICE_NAME=my-agent
 
 1. Call `setup_lignos()` once at startup.
 2. Add the three env vars to your `.env`.
-3. Run your agent — sessions appear in Lignos Studio under Governed Workflows.
+3. Run `/lignos-score` before shipping — evaluates your implementation against the canvas standard.
 
-Studio verifies each session against your manifest automatically: milestone progress, outcome confidence, and drift findings surface without additional configuration.
+When Lignos Studio launches, it will verify each session against your manifest automatically — milestone progress and drift findings against the same anti-pattern you defined in the canvas.
 
 ## Next step
 
 ```
 /lignos-score
 ```
-
-Evaluates the implementation against the canvas standard before you ship.
-
-**Studio:** After OTLP is flowing, import at http://127.0.0.1:4000?standard=ready&from=labs

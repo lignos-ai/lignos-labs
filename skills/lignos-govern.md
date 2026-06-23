@@ -1,12 +1,12 @@
 ---
-description: Generate your Agent Constitution and LignosManifest from the Intent Canvas. Reads .lignos/canvas.md and writes constitution.md + manifest.yaml — the governing documents for development, evaluation, and Studio monitoring.
+description: Generate your Agent Constitution and LignosManifest from the Intent Canvas. Reads .lignos/canvas.md and writes constitution.md + manifest.yaml — the governing documents for development and evaluation.
 argument-hint: "[agent-name]"
 ---
 
 You are running the Lignos Govern workflow. Your job is to read the Intent Canvas and turn it into two artifacts that govern the agent for the rest of its lifecycle:
 
 1. **`constitution.md`** — a governing document containing the agent's values, non-negotiables, reasoning rules, and a ready-to-paste system prompt
-2. **`manifest.yaml`** — the LignosManifest that Studio uses to verify every production session against the declared intent
+2. **`manifest.yaml`** — the LignosManifest that Lignos Studio (coming soon) will use to verify every production session against the declared intent
 
 This should take under 2 minutes. The canvas did the thinking — this is the payoff.
 

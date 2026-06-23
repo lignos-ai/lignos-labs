@@ -62,7 +62,7 @@ Governance Readiness  ⚠  intent_scope present; classify-intent milestone missi
    prohibition targeting this. Under efficiency pressure, this is the most likely drift pattern.
 
 2. Governance Readiness — The manifest declares classify-intent as a required milestone but
-   the entry point has no milestone("classify-intent") call. Studio will see the session but
+   the entry point has no milestone("classify-intent") call. When Lignos Studio launches,
    the milestone timeline will be incomplete. Run /lignos-scope to get the updated snippet.
 ─────────────────────────────────────────────────
 ```
@@ -93,6 +93,6 @@ If the answer is clear from the available information, state it directly.
 
 Run `/lignos-score` again after addressing findings to confirm before shipping. The skill reads the current canvas and constitution each time — it tracks the standard, not the history.
 
-## After score — Studio (optional)
+## After score
 
-When traces are flowing, import `.lignos/` into Studio to monitor drift against the same anti-pattern: http://127.0.0.1:4000?standard=ready&from=labs
+Ship. Then run `/lignos-scope` to instrument your entry point with `intent_scope` and milestone calls — ready for when Lignos Studio launches and verifies sessions against your manifest automatically.
