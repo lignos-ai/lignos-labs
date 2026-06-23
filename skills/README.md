@@ -5,18 +5,21 @@ Four Claude Code skills that walk an agent from idea to governed production. The
 ## The workflow
 
 ```
-/lignos-canvas   →   /lignos-govern   →   /lignos-scope   →   /lignos-score
-     ↓                     ↓                    ↓                    ↓
-canvas.md          constitution.md         code snippet          pass/fail
-                   manifest.yaml
+/lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path
+       ↓
+/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio            ← full path
+       ↓                  ↓                ↓
+constitution.md      code snippet       pass/fail
+manifest.yaml
 ```
 
-| Step | Skill | Time | Output |
-|------|-------|------|--------|
-| 1 | [`/lignos-canvas`](./lignos-canvas.md) | 5–10 min | `.lignos/canvas.md` |
-| 2 | [`/lignos-govern`](./lignos-govern.md) | ~2 min | `.lignos/constitution.md`, `.lignos/manifest.yaml` |
-| 3 | [`/lignos-scope`](./lignos-scope.md) | ~1 min | Copy-paste instrumentation snippet |
-| 4 | [`/lignos-score`](./lignos-score.md) | ~3 min | Pre-ship evaluation report |
+| Step | Skill | Time | Output | Server? |
+|------|-------|------|--------|---------|
+| 1 | [`/lignos-canvas`](./lignos-canvas.md) | 5–10 min | `.lignos/canvas.md` | No |
+| 2 | [`/lignos-eval`](./lignos-eval.md) | ~2 min | Judge prompt + scenario seeds + blocking assertion in chat | No |
+| 3 | [`/lignos-govern`](./lignos-govern.md) | ~2 min | `.lignos/constitution.md`, `.lignos/manifest.yaml` | No |
+| 4 | [`/lignos-scope`](./lignos-scope.md) | ~1 min | Copy-paste instrumentation snippet | No |
+| 5 | [`/lignos-score`](./lignos-score.md) | ~3 min | Pre-ship evaluation report | No |
 
 ## Install the skills
 
@@ -24,11 +27,12 @@ Skills are slash commands for Claude Code, or prompt templates you paste into Cu
 
 ### Claude Code (slash commands)
 
-Install all four skills globally — available in any project:
+Install all five skills globally — available in any project:
 
 ```bash
 mkdir -p ~/.claude/commands
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-canvas.md   -o ~/.claude/commands/lignos-canvas.md
+curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-eval.md    -o ~/.claude/commands/lignos-eval.md
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-govern.md  -o ~/.claude/commands/lignos-govern.md
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-scope.md   -o ~/.claude/commands/lignos-scope.md
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-score.md   -o ~/.claude/commands/lignos-score.md
@@ -50,9 +54,9 @@ The `docs/skills/` folder has human-readable versions of each skill. Open the re
 ### Prerequisites
 
 - An AI coding agent: [Claude Code](https://github.com/anthropics/claude-code), Cursor, Codex, or similar
-- Lignos Studio (optional for canvas/govern; required for drift monitoring and eval export UI): `npm run studio` from `mcp-server/`
+- Lignos Studio (optional — for production drift monitoring only): `npm run studio` from the `lignos-platform` `mcp-server/`
 
-### After govern — open Studio
+### After eval — open Studio (optional)
 
 When `.lignos/` is complete, import into Studio to verify production alignment:
 
@@ -70,7 +74,9 @@ The handoff URL keeps your place in the journey — Studio highlights import and
 
 **Canvas** — before writing any code. The canvas replaces the question "what are the requirements?" with "what is the exact standard this agent must maintain?"
 
-**Govern** — immediately after the canvas. Produces the system prompt you paste into the agent and the contract Studio verifies against.
+**Eval** — right after canvas. Produces a judge prompt, scenario seeds, and a blocking assertion directly in the chat — no server. Paste into Braintrust or LangSmith in under two minutes.
+
+**Govern** — when you're ready to build. Produces the system prompt you paste into the agent and the contract Studio verifies against.
 
 **Scope** — when the agent code exists and you are ready to instrument it. Produces a ready-to-paste code block with `intent_scope` and `milestone` calls.
 

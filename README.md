@@ -18,11 +18,11 @@ Lignos Labs is the free, open community layer of [Lignos](https://lignos-ai.gith
 
 ---
 
-## Fastest path
+## Fastest path — judge prompt in 15 minutes, no server
 
-**No server needed — skip straight to [`examples/`](examples/)** if you want to steal a canvas and eval block right now.
+**No install? Skip to [`examples/`](examples/)** — copy the closest canvas and eval block and adapt them.
 
-Otherwise, pick your environment:
+Otherwise, pick your environment and run two skills back to back:
 
 ### Claude Code
 
@@ -30,40 +30,37 @@ Otherwise, pick your environment:
 mkdir -p ~/.claude/commands
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-canvas.md \
   -o ~/.claude/commands/lignos-canvas.md
+curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-eval.md \
+  -o ~/.claude/commands/lignos-eval.md
 ```
 
-Restart Claude Code, type `/lignos-canvas`.
+Restart Claude Code. Type `/lignos-canvas` → answer 4 questions → type `/lignos-eval`.
 
 ### Cursor
 
-Open [skills/lignos-canvas.md](skills/lignos-canvas.md), copy the full content, and paste it into a new Cursor Composer session as your first message.
+Open [skills/lignos-canvas.md](skills/lignos-canvas.md), paste into Cursor Composer. Answer the 4 questions. Then open [skills/lignos-eval.md](skills/lignos-eval.md) and paste it in — you get the eval block inline.
 
 ### Codex / other agents
 
-Same as Cursor — paste the raw skill content into your agent's system prompt or first user turn. Each skill is self-contained plain text.
+Same as Cursor — each skill is self-contained plain text. Paste canvas skill first, then eval skill.
 
 ---
 
-**Then: answer 4 questions.** You get `.lignos/canvas.md` — your agent's Product Standard.
+**After `/lignos-canvas`:** you have `.lignos/canvas.md` — your agent's Product Standard.
 
-**Then: export an eval block (optional, requires Lignos Studio running locally):**
-
-```bash
-curl -X POST http://localhost:4000/api/intent/export-eval \
-  -H "Content-Type: application/json" -d '{}'
-```
-
-Paste `judgePrompt` into Braintrust or LangSmith. Import `scenarioSeeds` as your first test cases.
+**After `/lignos-eval`:** three artifacts appear in the chat, no server:
+- **Judge prompt** — paste into Braintrust or LangSmith as your evaluator
+- **Scenario seeds** — your first test dataset, derived from your anti-pattern
+- **Blocking assertion** — string-match pre-check that catches the most common failure before the judge runs
 
 ---
 
-## The four skills
+## The five skills
 
 ```
-/lignos-canvas  →  /lignos-govern  →  /lignos-scope  →  /lignos-score
-      ↓                  ↓                 ↓                  ↓
- canvas.md        constitution.md     code snippet         pass/fail
-                  manifest.yaml
+/lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path (no server)
+       ↓
+/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio            ← full path
 ```
 
 Full install + usage for all environments: [`skills/README.md`](skills/README.md)
