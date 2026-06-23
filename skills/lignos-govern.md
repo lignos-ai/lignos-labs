@@ -3,12 +3,13 @@ description: Generate your Agent Constitution and LignosManifest from the Intent
 argument-hint: "[agent-name]"
 ---
 
-You are running the Lignos Govern workflow. Your job is to read the Intent Canvas and turn it into two artifacts that govern the agent for the rest of its lifecycle:
+You are running the Lignos Govern workflow. Your job is to read the Intent Canvas and produce one artifact:
 
-1. **`constitution.md`** — a governing document containing the agent's values, non-negotiables, reasoning rules, and a ready-to-paste system prompt
-2. **`manifest.yaml`** — the LignosManifest that Lignos Studio (coming soon) will use to verify every production session against the declared intent
+**`constitution.md`** — a governing document containing the agent's values, non-negotiables, reasoning rules, and a ready-to-paste system prompt.
 
 This should take under 2 minutes. The canvas did the thinking — this is the payoff.
+
+For the LignosManifest and instrumentation code, run `/lignos-scope` after this.
 
 ---
 
@@ -36,31 +37,9 @@ If `$ARGUMENTS` is set and non-empty, use it to override `agent_name`.
 
 ---
 
-## Step 2 — Infer session characteristics from canvas
+## Step 2 — Tell the user what you found
 
-Read the JTBD, product standard, and format fields to answer these questions. Do not assign a named type — reason directly from what the canvas says.
-
-**Conversational or single-shot?**
-- Single-shot: the agent receives input and produces one output per run (scoring, summarization, classification)
-- Conversational: the agent exchanges multiple messages before completing (customer support, iterative research)
-- Signal: look at the Format field and JTBD outcome — does it describe one output or a back-and-forth?
-
-**Input/output volume?**
-- Lightweight: brief inputs, short structured outputs (score + reason, classification, routing)
-- Medium: moderate context needed, paragraph-length outputs (summaries, analyses)
-- Heavy: large inputs or long outputs (research reports, document generation, multi-step orchestration)
-
-**User-facing or internal?**
-- User-facing: the agent communicates directly with end customers
-- Internal: the agent produces artifacts consumed by a team or system
-
-Use these three signals to estimate SLA values and derive milestones in Step 4.
-
----
-
-## Step 3 — Tell the user what you found
-
-Say: *"I read your canvas. [One sentence describing what the agent does and for whom, based on JTBD — no type label.] Generating your Constitution and governance contract now."*
+Say: *"I read your canvas. [One sentence describing what the agent does and for whom, based on JTBD.] Generating your Constitution now."*
 
 Move directly to generation. Do not ask for confirmation.
 
@@ -143,81 +122,19 @@ This agent operates under a Lignos Agent Constitution. Evaluate every output aga
 
 ---
 
-### Manifest
+## Step 5 — Show the system prompt and confirm
 
-Write `manifest.yaml` using the LignosManifest schema below. Derive `intentId` as a lowercase kebab-case slug of the agent name (e.g., "Support Triage Agent" → "support-triage-agent").
+Show the user the full system prompt section from `constitution.md`. Then ask: *"Does this capture your standard accurately? Say yes to write the files, or tell me what to adjust."*
 
-**SLA — derive from canvas signals, do not use a lookup table:**
-
-| Signal | maxTurns | maxDurationMs | maxCostUsd | maxTokens |
-|---|---|---|---|---|
-| Single-shot (one input → one output) | 3–5 | 10000–20000 | 0.02–0.05 | 10000–25000 |
-| Conversational (back-and-forth) | 8–15 | 20000–60000 | 0.05–0.20 | 20000–60000 |
-| Heavy context / long output | 10–20 | 45000–120000 | 0.15–0.50 | 50000–100000 |
-
-Choose values that match what the canvas describes. If the JTBD describes a single structured output (a score, a summary, a classification), use the single-shot row as your starting point. If the Format field specifies something brief, lean toward the lower end. State your reasoning briefly in a comment in the YAML.
-
-**Milestones — derive from the JTBD flow, not a template:**
-
-Read the JTBD and imagine the 2–4 steps the agent actually takes to go from input to output. Name them as kebab-case span names. Mark the steps that must complete for the output to be valid as `required: true`; optional quality steps as `required: false`. Do not copy generic scaffold names — use names that describe this agent's actual work.
-
-**Manifest template:**
-
-```yaml
-apiVersion: lignos/v1
-kind: Manifest
-metadata:
-  intentId: [kebab-case slug of agent_name]
-  displayName: "[agent_name]"
-  version: "1.0.0"
-
-spec:
-  topology:
-    milestones:
-[list of milestones for the detected type, each as:]
-      - span: [milestone-name]
-        required: [true|false]
-    terminalFailureConditions:
-      - attribute: "error"
-        value: "true"
-
-  sla:
-    maxTurns: [from type defaults]
-    maxDurationMs: [from type defaults]
-    maxCostUsd: [from type defaults]
-    maxTokens: [from type defaults]
-
-  compliance:
-    anonymizeAttributes:
-      - traceloop.entity.input
-      - traceloop.entity.output
-
-# Intent standard (from canvas): [one_sentence_standard]
-# Generated: [today's date]
-# SLA: starting estimates — adjust after first real runs
-```
+Apply any corrections before writing.
 
 ---
 
-## Step 5 — Show previews and ask about SLA
+## Step 6 — Write the file
 
-Show the user:
-1. The full system prompt section from `constitution.md` (the most immediately useful part)
-2. The SLA block from `manifest.yaml`
+Write to `.lignos/constitution.md`.
 
-Then ask: *"These SLA values are starting estimates based on your canvas — [one sentence explaining what you inferred, e.g., 'your agent produces a single structured output per run, so I used conservative single-shot defaults']. [maxTurns] turns, [maxDurationMs/1000]s, $[maxCostUsd] per run. Do these look right, or do you want to adjust before I write the files?"*
-
-If the user wants to adjust, update the values in the manifest before writing. If they say "looks good" or equivalent, write both files immediately.
-
----
-
-## Step 6 — Write both files
-
-Write to:
-- `.lignos/constitution.md`
-- `.lignos/manifest.yaml`
-
-If either file exists, show what changed (old vs. new version field or SLA) and ask before overwriting.
+If the file already exists, show what changed (the one-sentence standard, at minimum) and ask before overwriting.
 
 ---
 
@@ -253,12 +170,9 @@ Confirm all files are written. Then say:
 *"Your governing documents are ready.*
 
 *— `.lignos/constitution.md` — paste the system prompt into your agent. It encodes your standard as governing instructions.*
-*— `.lignos/manifest.yaml` — the governance contract for production verification.*
 *— `CLAUDE.md` — every session in this project now starts with your Product Standard in context.*
 
-*Next: run `/lignos-scope` for a copy-paste instrumentation snippet, then `/lignos-score` before you ship.*
-
-*Lignos Studio (coming soon) will verify every production session against this manifest — the same standard you defined in the canvas."*
+*Next: run `/lignos-score` to evaluate your implementation before you ship, or `/lignos-scope` to generate your LignosManifest and instrumentation code for Studio."*
 
 ---
 
@@ -267,6 +181,5 @@ Confirm all files are written. Then say:
 - Do not invent values or non-negotiables not grounded in the canvas. If the canvas is thin, produce what you can and note where the PM should fill in detail.
 - Do not use "span", "trace", "OTLP", "telemetry", "compliance", or "localhost" in the closing message.
 - Do not reference Lignos Studio as currently available — it is coming soon.
-- Do not skip the SLA preview — the PM needs to see and own these numbers before they govern production.
 - Do not produce a generic system prompt. Every sentence must be traceable to a canvas field.
 - The system prompt inside `constitution.md` must be complete and pasteable — no `[placeholder]` brackets left in it.

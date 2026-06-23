@@ -1,6 +1,8 @@
-# `/lignos-scope` — Instrumentation Snippet
+# `/lignos-scope` — Manifest + Instrumentation Snippet
 
-Reads the LignosManifest and produces a single, complete, ready-to-paste code block that instruments your agent with `intent_scope` and `milestone` calls. No placeholders — paste and run.
+Reads the canvas and generates two things: the LignosManifest (`manifest.yaml`) that defines your governance contract, and a ready-to-paste instrumentation snippet. No placeholders — paste and run.
+
+This skill is optional and Studio-prep focused. Run it when you're ready to instrument your agent for production monitoring.
 
 ## Usage
 
@@ -13,35 +15,127 @@ Reads the LignosManifest and produces a single, complete, ready-to-paste code bl
 
 Pass a style argument to skip the style question.
 
+## Before anything else — confirm you're in the right project
+
+Print the current working directory. Say: *"Starting in `<cwd>` — is this the correct project? Reply yes to continue, or tell me the right folder."*
+
+Do not proceed until the user confirms.
+
 ## Prerequisites
 
-`.lignos/manifest.yaml` must exist. Run `/lignos-govern` first.
+`.lignos/canvas.md` must exist. Run `/lignos-canvas` first, then `/lignos-govern` to produce the constitution. This skill generates the manifest and instrumentation code on top of that.
 
 ## What it does
 
-1. Reads `.lignos/manifest.yaml` for `intentId`, `manifest_version`, and the milestone list.
-2. Reads `.lignos/canvas.md` for the agent name and one-sentence standard (used in code comments).
+1. Reads `.lignos/canvas.md` for the JTBD, agent name, one-sentence standard, and session characteristics.
+2. Generates `.lignos/manifest.yaml` — the LignosManifest that Lignos Studio will verify production sessions against.
 3. Asks which code style fits your codebase (if not passed as an argument).
-4. Produces a complete snippet — every milestone from the manifest appears as a call in the output.
+4. Produces a complete instrumentation snippet with every milestone from the manifest as a call.
 5. Shows the three `.env` variables to add.
 
-## Style options
+---
 
-### `async` — context managers, async (default for LangChain / OpenAI SDK)
+## Step 1 — Read the canvas
+
+Read `.lignos/canvas.md`. Extract:
+- `agent_name`
+- `jtbd` — including the Format and session characteristics (single-shot vs. conversational, input/output volume)
+- `one_sentence_standard`
+- `anti_pattern`
+
+If the canvas does not exist, stop: *"No canvas found at `.lignos/canvas.md`. Run `/lignos-canvas` first."*
+
+---
+
+## Step 2 — Generate the manifest
+
+Derive `intentId` as a lowercase kebab-case slug of the agent name (e.g., "Support Triage Agent" → "support-triage-agent").
+
+**SLA — infer from canvas signals, do not use a lookup table:**
+
+| Signal | maxTurns | maxDurationMs | maxCostUsd | maxTokens |
+|---|---|---|---|---|
+| Single-shot (one input → one output) | 3–5 | 10000–20000 | 0.02–0.05 | 10000–25000 |
+| Conversational (back-and-forth) | 8–15 | 20000–60000 | 0.05–0.20 | 20000–60000 |
+| Heavy context / long output | 10–20 | 45000–120000 | 0.15–0.50 | 50000–100000 |
+
+If the JTBD describes a single structured output (a score, a summary, a classification), use the single-shot row. Lean toward the lower end if the Format field specifies something brief.
+
+**Milestones — derive from the JTBD flow:**
+
+Read the JTBD and identify the 2–4 steps the agent actually takes from input to output. Name them as kebab-case span names. Mark steps that must complete for the output to be valid `required: true`; optional quality steps `required: false`. Use names that describe this agent's actual work — do not copy generic scaffold names.
+
+**Show the user the proposed manifest and SLA and ask:**
+
+*"Here's the manifest I'll generate — SLA estimates are based on [one sentence: what you inferred from the canvas, e.g., 'your agent produces a single structured output per run']. Do these look right, or do you want to adjust before I write the file?"*
+
+Apply any changes, then write `.lignos/manifest.yaml`:
+
+```yaml
+apiVersion: lignos/v1
+kind: Manifest
+metadata:
+  intentId: [kebab-case slug of agent_name]
+  displayName: "[agent_name]"
+  version: "1.0.0"
+
+spec:
+  topology:
+    milestones:
+      - span: [milestone-name]
+        required: [true|false]
+    terminalFailureConditions:
+      - attribute: "error"
+        value: "true"
+
+  sla:
+    maxTurns: [inferred]
+    maxDurationMs: [inferred]
+    maxCostUsd: [inferred]
+    maxTokens: [inferred]
+
+  compliance:
+    anonymizeAttributes:
+      - traceloop.entity.input
+      - traceloop.entity.output
+
+# Intent standard: [one_sentence_standard]
+# Generated: [today's date]
+# SLA: starting estimates — adjust after first real runs
+```
+
+If `.lignos/manifest.yaml` already exists, show what changed and ask before overwriting.
+
+---
+
+## Step 3 — Ask for code style
+
+Ask: *"Which style fits your codebase?"*
+
+- `async` — context managers, async (default for LangChain / OpenAI SDK)
+- `sync` — context managers, sync
+- `decorator` — async decorators
+
+Skip this question if the user passed a style argument.
+
+---
+
+## Step 4 — Generate the instrumentation snippet
+
+Produce a complete, ready-to-paste snippet. Every milestone from the manifest appears as a call. Include one inline comment per milestone.
+
+### `async` — context managers, async
 
 ```python
 from lignos import intent_scope, milestone
 
 async def run(self, input):
-    async with intent_scope("my-agent", manifest_version="1.0.0"):
-        async with milestone("ingest-input"):
-            # load and validate the incoming input
+    async with intent_scope("[intentId]", manifest_version="1.0.0"):
+        async with milestone("[milestone-1]"):
+            # [what this step does, from the milestone name]
             pass
-        async with milestone("classify-intent"):
-            # determine the intent or category of the input
-            pass
-        async with milestone("generate-summary"):
-            # produce the final output
+        async with milestone("[milestone-2]"):
+            # [what this step does]
             pass
 ```
 
@@ -51,8 +145,8 @@ async def run(self, input):
 from lignos import sync_intent_scope, sync_milestone
 
 def run(self, input):
-    with sync_intent_scope("my-agent", manifest_version="1.0.0"):
-        with sync_milestone("ingest-input"):
+    with sync_intent_scope("[intentId]", manifest_version="1.0.0"):
+        with sync_milestone("[milestone-1]"):
             pass
 ```
 
@@ -61,42 +155,40 @@ def run(self, input):
 ```python
 from lignos import lignos_intent, lignos_milestone
 
-@lignos_intent("my-agent", manifest_version="1.0.0")
+@lignos_intent("[intentId]", manifest_version="1.0.0")
 async def run(self, input):
     ...
 
-@lignos_milestone("ingest-input")
-async def ingest_input(self, ...):
-    # load and validate the incoming input
+@lignos_milestone("[milestone-1]")
+async def milestone_1_fn(self, ...):
+    # [what this step does]
     ...
 ```
 
-## Output
-
-A complete snippet containing:
-
-- `setup_lignos()` — one-time OTLP exporter setup; call this at app startup (e.g., in `main.py` or your app factory)
-- The governed entry point with `intent_scope` wrapping all milestone calls
-- One inline comment per milestone describing what that step does
-
-Plus the three `.env` lines to add:
+Also show the three `.env` lines to add:
 
 ```
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
 OTEL_TRACES_EXPORTER=otlp
-OTEL_SERVICE_NAME=my-agent
+OTEL_SERVICE_NAME=[intentId]
 ```
 
-## After pasting
+---
 
-1. Call `setup_lignos()` once at startup.
-2. Add the three env vars to your `.env`.
-3. Run `/lignos-score` before shipping — evaluates your implementation against the canvas standard.
+## Step 5 — Close
 
-When Lignos Studio launches, it will verify each session against your manifest automatically — milestone progress and drift findings against the same anti-pattern you defined in the canvas.
+Confirm the manifest is written. Then say:
 
-## Next step
+*"`.lignos/manifest.yaml` is ready — your governance contract is set. Paste the snippet into your agent's entry point, add the three env vars, and run `/lignos-score` before you ship.*
 
-```
-/lignos-score
-```
+*When Lignos Studio launches, it will verify every production session against this manifest — the same standard you defined in the canvas."*
+
+---
+
+## What not to do
+
+- Do not use a named agent type (triage, summarization, etc.) to look up SLA values — infer from the canvas.
+- Do not copy generic milestone names — derive them from the actual JTBD flow.
+- Do not skip the SLA preview — the user needs to see and own these numbers before they govern production.
+- Do not reference Lignos Studio as currently available — it is coming soon.
+- Do not produce placeholder brackets in the code snippet — every value must be filled in.
