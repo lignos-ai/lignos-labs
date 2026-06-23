@@ -83,7 +83,9 @@ mkdir -p .claude/commands
 
 ### Cursor / Codex / other agents
 
-The `docs/skills/` folder has human-readable versions of each skill. Open the relevant `.md` file and paste it into your agent's composer or system prompt. Each skill is self-contained — no special runtime needed.
+Open the relevant skill file from the [`skills/`](.) folder and paste the entire contents into your agent's composer or system prompt. Each skill is self-contained — no special runtime needed.
+
+After pasting, send one message to start: **"Begin."** The agent will follow the skill instructions from Step 0.
 
 ### Prerequisites
 
@@ -116,3 +118,5 @@ All generated files live under `.lignos/` at the project root:
 | `.lignos/canvas.md` | `/lignos-canvas` | The authoritative intent definition — JTBD, standard, anti-pattern, value proxy |
 | `.lignos/constitution.md` | `/lignos-govern` | Agent Constitution + ready-to-paste system prompt |
 | `.lignos/manifest.yaml` | `/lignos-govern` | LignosManifest — Lignos Studio (coming soon) will verify every session against this |
+
+**Commit `.lignos/` to version control.** These are governing documents, not build artifacts — treat them the same way you'd commit a `CLAUDE.md` or `README.md`. Do not add `.lignos/` to `.gitignore`.
