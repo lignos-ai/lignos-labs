@@ -55,12 +55,37 @@ Same as Cursor — each skill is self-contained plain text. Paste canvas skill f
 
 ---
 
-## The five skills
+## How it works
 
-```
-/lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path (no server)
-       ↓
-/lignos-govern  →  /lignos-scope  →  /lignos-score  →  Studio (coming soon)
+```mermaid
+flowchart TD
+    Start(["Your agent\nno standard yet"])
+
+    Start --> Canvas
+
+    subgraph fast["Fast path — no server, ~15 min"]
+        Canvas["/lignos-canvas\nAnswer 4 questions"]
+        EvalBlock["Judge Prompt\nScenario Seeds\nBlocking Assertion"]
+        Canvas -->|"outputs automatically"| EvalBlock
+    end
+
+    EvalBlock --> BT["Braintrust"]
+    EvalBlock --> LS["LangSmith"]
+
+    Canvas --> CF
+
+    CF[".lignos/canvas.md\nProduct Standard"]
+
+    subgraph full["Full path — governed agent"]
+        CF --> Govern["/lignos-govern"]
+        Govern --> SP[".lignos/constitution.md\nsystem prompt"]
+        Govern --> MF[".lignos/manifest.yaml\ngovernance contract"]
+        Govern --> CM["CLAUDE.md\nalways-on context"]
+        SP --> Scope["/lignos-scope\ninstrumentation snippet"]
+        SP --> Score["/lignos-score\npre-ship pass/fail"]
+    end
+
+    MF -.->|"coming soon"| Studio["Lignos Studio\nproduction drift monitoring"]
 ```
 
 Full install + usage for all environments: [`skills/README.md`](skills/README.md)
