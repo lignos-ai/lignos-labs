@@ -113,7 +113,7 @@ A local web UI opens at `http://localhost:15500` showing pass/fail per seed, the
 ✓ Seed 5 — edge case             PASS  (score: 0.9)
 ```
 
-Seeds 1 and 2 should fail — they're designed to trigger the anti-pattern. If they pass, your agent's system prompt isn't enforcing the prohibition. Run `/lignos-score` to find the gap.
+Seeds 1 and 2 should fail — they're designed to trigger the anti-pattern. If they pass, your agent's system prompt isn't enforcing the prohibition. Update the constitution and add an explicit prohibition for the failure mode.
 
 ## Re-running after changes
 

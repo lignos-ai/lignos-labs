@@ -7,7 +7,7 @@ Four skills that take an agent from idea to governed production — no server re
 ```
 /lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path
        ↓
-/lignos-govern  →  /lignos-score  →  ship
+/lignos-govern  →  ship
        ↓                  ↓
 constitution.md       pass/fail
 manifest.yaml
@@ -19,8 +19,6 @@ CLAUDE.md
 | 1 | [`/lignos-canvas`](./lignos-canvas.md) | 10–15 min | `.lignos/canvas.md` + judge prompt + live Taste Test (PASS/FAIL in chat) |
 | 2 | [`/lignos-eval`](./lignos-eval.md) | ~2 min | Regenerate judge prompt + scenario seeds + blocking assertion from canvas |
 | 3 | [`/lignos-govern`](./lignos-govern.md) | ~2 min | `constitution.md`, `manifest.yaml`, `CLAUDE.md` |
-| 4 | [`/lignos-score`](./lignos-score.md) | ~3 min | Pre-ship pass/fail across 5 dimensions |
-
 [`/lignos-scope`](./lignos-scope.md) is available separately — generates instrumentation code to prepare for Lignos Studio (coming soon).
 
 ## Which eval tool?
@@ -69,7 +67,6 @@ mkdir -p ~/.claude/commands
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-canvas.md   -o ~/.claude/commands/lignos-canvas.md
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-eval.md    -o ~/.claude/commands/lignos-eval.md
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-govern.md  -o ~/.claude/commands/lignos-govern.md
-curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-score.md   -o ~/.claude/commands/lignos-score.md
 ```
 
 Then restart Claude Code and type `/lignos-canvas` to start.
@@ -116,7 +113,6 @@ When you start a skill, it will say: *"Starting in `<cwd>` — is this the corre
 
 **Govern** — when you're ready to build. Produces the system prompt you paste into your agent, the governance contract for Studio, and a `CLAUDE.md` block so every future session knows the standard.
 
-**Score** — before shipping. Evaluates your system prompt and implementation against the canvas standard across 5 dimensions. Blocks shipping when the anti-pattern guard is missing.
 
 **Scope** *(optional — Studio prep)* — generates `intent_scope` and `milestone` instrumentation code for when Lignos Studio launches. Not needed to run the other four skills.
 

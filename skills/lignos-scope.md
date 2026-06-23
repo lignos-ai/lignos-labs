@@ -179,7 +179,7 @@ OTEL_SERVICE_NAME=[intentId]
 
 Confirm the manifest is written. Then say:
 
-*"`.lignos/manifest.yaml` is ready — your governance contract is set. Paste the snippet into your agent's entry point, add the three env vars, and run `/lignos-score` before you ship.*
+*"`.lignos/manifest.yaml` is ready — your governance contract is set. Paste the snippet into your agent's entry point and add the three env vars.*
 
 *When Lignos Studio launches, it will verify every production session against this manifest — the same standard you defined in the canvas."*
 

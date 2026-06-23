@@ -62,9 +62,8 @@ flowchart TD
     Canvas --> Standard[".lignos/canvas.md\nProduct Standard"]
     Canvas --> EvalSet["Judge Prompt · Seeds · Blocking Assertion\nLive Taste Test → PASS/FAIL · Your Standard Declared"]
 
-    Standard --> Govern["/lignos-govern\nConstitution · CLAUDE.md · manifest"]
-    Govern --> Score["/lignos-score\npre-ship pass/fail"]
-    Score --> Ship(["Ship"])
+    Standard --> Govern["/lignos-govern\nConstitution · CLAUDE.md"]
+    Govern --> Ship(["Ship"])
 
     EvalSet --> Platforms["Braintrust · LangSmith · Promptfoo"]
 

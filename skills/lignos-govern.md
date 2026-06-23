@@ -196,7 +196,7 @@ response = client.messages.create(
 *"The text under `## System Prompt` in `.lignos/constitution.md` is a ready-to-paste system prompt. Wherever your framework lets you set the starting instructions for the LLM — the first message, the system role, the agent config — paste it there. If you tell me your specific stack I can be more precise."*
 
 **Always end with:**
-*"Next: run `/lignos-score` to check your implementation against the standard before you ship."*
+*"Next: run `/lignos-eval` any time your agent produces a surprising output — bring it in and capture it as a named scenario. Run `/lignos-scope` when you're ready to generate your governance manifest and instrumentation code for Studio."*
 
 ---
 

@@ -120,9 +120,9 @@ results = evaluate(
 |-----------------|--------|
 | `blocking_assertion` score 0 | Anti-pattern phrase in output — fix first |
 | `product_standard` score < 0.5 | Output doesn't match tone, format, or quality bar |
-| All scores ≥ 0.8 across seeds | Ready to run `/lignos-score` and ship |
+| All scores ≥ 0.8 across seeds | Ready to ship |
 
-When evals catch drift, update your system prompt and re-run `/lignos-score` to verify the fix before re-running evals.
+When evals catch drift, update your system prompt and re-run evals to verify the fix.
 
 ---
 

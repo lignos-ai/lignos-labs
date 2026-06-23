@@ -102,4 +102,4 @@ def blocking_scorer(output, expected, metadata):
 | Generic tone / wrong format | Judge returns FAIL with Standard Alignment rationale |
 | Output doesn't enable action | Judge returns FAIL with Value Signal rationale |
 
-When evals catch drift, update your system prompt and re-run `/lignos-score` to verify the fix before re-running evals.
+When evals catch drift, update your system prompt and re-run evals to verify the fix.
