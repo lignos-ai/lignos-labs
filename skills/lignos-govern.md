@@ -227,16 +227,13 @@ Write a Lignos context block so every future session in this project knows about
 - If `CLAUDE.md` does not exist: create it with only this block.
 
 ```markdown
-## Lignos Agent Standard
+## Agent Standard
 
-This project's agent has a declared Product Standard. Before generating output, reviewing code, or making suggestions, read `.lignos/canvas.md`.
+**[one_sentence_standard from canvas — paste verbatim, no label]**
 
-**One-Sentence Standard:** [one_sentence_standard from canvas]
+Never: [signal phrase 1] · [signal phrase 2] · [signal phrase 3] (add more if canvas has them)
 
-**Anti-Pattern to avoid:** [anti_pattern one-sentence description from canvas]
-Signals: [comma-separated list of signal phrases from canvas anti-pattern bullets]
-
-**Full standard:** `.lignos/canvas.md` · **System prompt:** `.lignos/constitution.md`
+→ `.lignos/canvas.md` · `.lignos/constitution.md`
 ```
 
 After writing, tell the user: *"Added a Lignos context block to `CLAUDE.md` — every future Claude Code session in this project will follow the same standard automatically."*
