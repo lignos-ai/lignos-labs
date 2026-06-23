@@ -22,7 +22,9 @@ Most teams build agents first and discover what "good" means after the first pro
 
 **No install? Skip to [`examples/`](examples/)** — copy the closest canvas and eval block and adapt them.
 
-Otherwise, pick your environment and run two skills back to back:
+**One thing first:** Open your AI tool from inside the correct project folder. Every skill writes `.lignos/` files to the current working directory. The skill will print the path and ask you to confirm before creating anything — don't skip that step if you work across multiple projects.
+
+Otherwise, pick your environment and run the canvas skill:
 
 ### Claude Code
 
