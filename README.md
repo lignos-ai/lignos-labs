@@ -64,6 +64,7 @@ flowchart TD
 
     Standard --> Govern["/lignos-govern\nConstitution · CLAUDE.md"]
     Govern --> Ship(["Ship"])
+    Govern -.->|"optional\nStudio prep"| Scope["/lignos-scope\nmanifest.yaml · snippet"]
 
     EvalSet --> Platforms["Braintrust · LangSmith · Promptfoo"]
 
