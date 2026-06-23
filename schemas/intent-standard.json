@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lignos-ai.github.io/lignos-labs/schemas/intent-standard.json",
+  "title": "IntentStandard",
+  "description": "The Lignos Intent Standard — a structured definition of an AI agent's business intent, product standard, anti-pattern, and value proxy. Produced by /lignos-canvas and stored in .lignos/canvas.md.",
+  "type": "object",
+  "required": ["agent", "jtbd", "productStandard", "antiPattern", "valueProxy", "oneLineSentenceStandard"],
+  "properties": {
+    "agent": {
+      "type": "string",
+      "description": "Name or short description of the agent"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of this standard, e.g. '1.0.0'. Increment when the one-sentence standard changes.",
+      "default": "1.0.0"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO date this standard was first defined"
+    },
+    "jtbd": {
+      "type": "object",
+      "description": "Job to Be Done — the specific situation and outcome this agent is hired to produce",
+      "required": ["situation", "user", "outcome"],
+      "properties": {
+        "situation": {
+          "type": "string",
+          "description": "One sentence: the specific context or trigger that causes someone to use this agent"
+        },
+        "user": {
+          "type": "string",
+          "description": "Who is in this situation — role and context"
+        },
+        "outcome": {
+          "type": "string",
+          "description": "What they need to be able to do after the agent runs"
+        }
+      }
+    },
+    "productStandard": {
+      "type": "object",
+      "description": "The quality bar — what great looks and feels like, beyond correctness",
+      "required": ["summary", "tone", "format"],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "description": "One sentence: the subjective quality bar — voice, confidence, scope"
+        },
+        "tone": {
+          "type": "string",
+          "description": "Voice and register of the output"
+        },
+        "format": {
+          "type": "string",
+          "description": "Structure and length expectations"
+        },
+        "constraints": {
+          "type": "array",
+          "description": "Hard rules — things the agent must always or never do",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "antiPattern": {
+      "type": "object",
+      "description": "Taste drift — the specific subtle failure that signals the agent is off-standard",
+      "required": ["description", "signals"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "One sentence: the concrete, observable drift pattern — not a crash, a quality failure"
+        },
+        "signals": {
+          "type": "array",
+          "description": "Short phrases or patterns that are dead giveaways the agent has drifted. Used as blocking assertions in eval.",
+          "items": { "type": "string" },
+          "minItems": 1
+        }
+      }
+    },
+    "valueProxy": {
+      "type": "object",
+      "description": "The observable judgment signal — how you know value was delivered without measuring a KPI",
+      "required": ["observableSuccess", "judgeQuestion"],
+      "properties": {
+        "observableSuccess": {
+          "type": "string",
+          "description": "What you see or don't see when the agent worked — a behavior change, not a metric"
+        },
+        "judgeQuestion": {
+          "type": "string",
+          "description": "The one-sentence question a reviewer applies to decide if an output succeeded"
+        }
+      }
+    },
+    "oneLineSentenceStandard": {
+      "type": "string",
+      "description": "The single sentence that captures the agent's entire standard: 'This agent is hired to [JTBD outcome] and must always [standard].'"
+    }
+  }
+}
