@@ -97,6 +97,17 @@ After your evals are running, Lignos Studio will let you import `.lignos/canvas.
 
 Lignos Studio is coming soon.
 
+## Before running any skill — open in the right project
+
+Every skill writes files to `.lignos/` in your **current working directory**. If you work across multiple projects, make sure you're in the right place first.
+
+- **Claude Code:** Open Claude Code from inside the correct project folder. Each skill will print the working directory and ask you to confirm before doing anything.
+- **Cursor / Codex:** Open the workspace for the correct project before pasting the skill.
+
+When you start a skill, it will say: *"Starting in `<cwd>` — is this the correct project? Reply yes to continue."* Don't skip this — it's there so `.lignos/canvas.md` lands in the right repo.
+
+---
+
 ## When to run each skill
 
 **Canvas** — before writing any code. Replaces "what are the requirements?" with "what is the exact standard this agent must maintain?" Outputs the eval block automatically, then runs your agent's first Taste Test live in chat — paste one output in, get PASS or FAIL back before the session closes.
