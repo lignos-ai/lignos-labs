@@ -23,6 +23,25 @@ CLAUDE.md
 
 [`/lignos-scope`](./lignos-scope.md) is available separately — generates instrumentation code to prepare for Lignos Studio (coming soon).
 
+## Which eval tool?
+
+After `/lignos-canvas` you have a Judge Prompt, Scenario Seeds, and a Blocking Assertion. You don't need a specific platform — pick the option that matches where you are:
+
+| I want to… | Use |
+|---|---|
+| Try the judge prompt right now, no setup | **Manual** — paste into any LLM chat |
+| Run proper evals locally, no account | **Promptfoo** — one command, YAML config |
+| Track evals over time with a nice UI | **Braintrust** — free tier, easiest cloud option |
+| Already using LangSmith for traces | **LangSmith** — native evaluator integration |
+
+**Fastest start (no account, no install):** Copy the Judge Prompt from your `/lignos-canvas` output. Open Claude, ChatGPT, or any LLM chat. Paste a sample output from your agent. Ask: "Based on this judge prompt, does this output PASS or FAIL?" That's a valid eval run.
+
+**Local evals with Promptfoo (recommended for most builders):** No account. Runs in your terminal. One YAML file. See [`integrations/promptfoo.md`](../integrations/promptfoo.md).
+
+**Cloud evals:** [`integrations/braintrust.md`](../integrations/braintrust.md) · [`integrations/langsmith.md`](../integrations/langsmith.md)
+
+---
+
 ## Install the skills
 
 Skills are slash commands for Claude Code, or prompt templates you paste into Cursor / Codex.
