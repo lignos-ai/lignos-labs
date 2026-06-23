@@ -8,7 +8,7 @@ Evaluates whether the agent as implemented will actually behave the way the PM i
 /lignos-score
 ```
 
-No arguments. The skill asks for your system prompt and entry point file interactively.
+No arguments. Reads `.lignos/canvas.md` and `.lignos/constitution.md` automatically, then finds your entry point file.
 
 ## Before anything else — confirm you're in the right project
 
@@ -22,14 +22,11 @@ Do not proceed until the user confirms.
 
 `.lignos/canvas.md` must exist. Run `/lignos-canvas` first.
 
-`.lignos/constitution.md` is optional but recommended — if it exists, the skill flags any divergence between the constitution's system prompt and your implementation.
+`.lignos/constitution.md` should also exist (run `/lignos-govern` if it doesn't) — the system prompt lives there and is read automatically.
 
 ## What it does
 
-Asks for two things:
-
-1. Your agent's system prompt (paste or file path)
-2. Your agent's main entry point file — the function that calls the LLM (optional, needed for Governance Readiness check)
+Reads `.lignos/canvas.md` and `.lignos/constitution.md` automatically. Then looks for your agent's entry point file to check governance readiness. Nothing to paste.
 
 Then evaluates across 5 dimensions:
 
@@ -96,6 +93,39 @@ You never write prose when bullets will do.
 You never qualify an obvious answer with hedging language ("it seems like", "possibly").
 If the answer is clear from the available information, state it directly.
 ```
+
+## Steps
+
+**Step 1 — Read the canvas**
+
+Read `.lignos/canvas.md`. If it does not exist, stop: *"No canvas found. Run `/lignos-canvas` first."*
+
+Extract: `agent_name`, `jtbd`, `standard`, `anti_pattern`, `value_proxy`, `one_sentence_standard`.
+
+**Step 2 — Read the constitution**
+
+Read `.lignos/constitution.md`. Extract the text under `## System Prompt` — everything from that heading to the next `---` or end of file.
+
+If `constitution.md` does not exist, say: *"No constitution found at `.lignos/constitution.md`. Run `/lignos-govern` first to generate it — or paste your system prompt here and I'll evaluate that instead."* Accept a paste as fallback.
+
+**Step 3 — Find the entry point**
+
+Look for the agent's main entry point file. Check in order:
+- Any file the user has open or recently referenced in this session
+- Common names: `agent.py`, `main.py`, `app.py`, `run.py`, `chain.py`, `handler.py`
+- A `src/` subdirectory with the same names
+
+Tell the user what you found: *"I found `[filename]` — is this the file where your agent calls the LLM? Say yes, give me a different path, or say skip to evaluate without it."*
+
+If nothing is found: *"I didn't find an obvious entry point. Give me the file path, or say skip — I'll evaluate the system prompt only and flag Governance Readiness as unreviewed."*
+
+**Step 4 — Evaluate**
+
+Run the evaluation across all 5 dimensions using the extracted system prompt and entry point (if provided).
+
+**Step 5 — Patch offers**
+
+After the report, ask: *"Want the exact sentences to add for each gap? I'll write targeted additions — not a rewrite — so your implementation voice is preserved."*
 
 ## Re-running
 
