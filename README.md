@@ -89,4 +89,4 @@ Full install + usage for all environments: [`skills/README.md`](skills/README.md
 
 ---
 
-[lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lignos-platform/) · Lignos Studio (coming soon)
+Lignos Studio — coming soon

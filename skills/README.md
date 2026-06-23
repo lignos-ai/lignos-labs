@@ -95,7 +95,7 @@ After pasting, send one message to start: **"Begin."** The agent will follow the
 
 After your evals are running, Lignos Studio will let you import `.lignos/canvas.md` and watch the same anti-pattern in live production traces — the drift signals you defined in the canvas become your production alerts.
 
-Sign up at [lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lignos-platform/) to be notified at launch.
+Lignos Studio is coming soon.
 
 ## When to run each skill
 
