@@ -138,9 +138,15 @@ If the file already exists, show what changed (the one-sentence standard, at min
 
 ---
 
-## Step 7 — Write project context file
+## Step 7 — Ask how they're building the agent
 
-Write a Lignos context block so every future session in this project knows about the standard — without the PM having to re-reference the canvas manually.
+Before writing project context, ask:
+
+*"One quick question — how are you calling Claude in this agent? For example: Claude API directly (Python/JS), Claude Code, Cursor, or something else? I'll tell you exactly where the system prompt goes."*
+
+Wait for their answer. Use it to tailor the close message in Step 8.
+
+Then write the Lignos context block to keep the standard in context for future sessions.
 
 **Check for CLAUDE.md:**
 
@@ -157,22 +163,40 @@ Never: [signal phrase 1] · [signal phrase 2] · [signal phrase 3] (add more if 
 → `.lignos/canvas.md` · `.lignos/constitution.md`
 ```
 
-After writing, tell the user: *"Added a Lignos context block to `CLAUDE.md` — every future Claude Code session in this project will follow the same standard automatically."*
-
-**For Cursor users:** Also note: *"If you use Cursor, copy the same block into `.cursorrules` at your project root."*
-
 ---
 
 ## Step 8 — Close
 
-Confirm all files are written. Then say:
+Confirm all files are written. Then give placement instructions specific to their answer from Step 7:
 
-*"Your governing documents are ready.*
+**If Claude API (Python or JS):**
+*"Open the file where you make your `client.messages.create()` call. Set the `system` parameter to the text under `## System Prompt` in `.lignos/constitution.md`. That's it — your agent now runs under the standard you defined.*
 
-*— `.lignos/constitution.md` — paste the system prompt into your agent. It encodes your standard as governing instructions.*
-*— `CLAUDE.md` — every session in this project now starts with your Product Standard in context.*
+```python
+response = client.messages.create(
+    model="claude-opus-4-8",
+    system=open(".lignos/constitution.md").read().split("## System Prompt")[1].split("---")[0].strip(),
+    messages=[{"role": "user", "content": user_input}]
+)
+```
 
-*Next: run `/lignos-score` to evaluate your implementation before you ship, or `/lignos-scope` to generate your LignosManifest and instrumentation code for Studio."*
+*Or paste the text directly — you don't need to read it from file."*
+
+**If Claude Code (running skills like this one):**
+*"`CLAUDE.md` is already written — every Claude Code session in this project now starts with your standard in context. The system prompt in `constitution.md` is your reference; Claude Code reads `CLAUDE.md` automatically.*
+
+*If you're also building a Claude Code agent or MCP tool, set the system prompt in your tool's definition file."*
+
+**If Cursor:**
+*"Copy the text under `## System Prompt` in `.lignos/constitution.md` into `.cursorrules` at your project root. Cursor loads `.cursorrules` automatically for every session.*
+
+*The `CLAUDE.md` block is also written — if you switch to Claude Code on this project, the same standard is already there."*
+
+**If another framework or unsure:**
+*"The text under `## System Prompt` in `.lignos/constitution.md` is a ready-to-paste system prompt. Wherever your framework lets you set the starting instructions for the LLM — the first message, the system role, the agent config — paste it there. If you tell me your specific stack I can be more precise."*
+
+**Always end with:**
+*"Next: run `/lignos-score` to check your implementation against the standard before you ship."*
 
 ---
 
