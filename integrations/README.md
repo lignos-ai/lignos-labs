@@ -1,89 +1,116 @@
 # Eval integrations
 
-After `/lignos-canvas` runs, you have three artifacts in chat. This guide explains what they are, why you need them, and which tool to use.
+After `/lignos-canvas` runs, you have three artifacts in chat. This guide explains what evals actually are, what the artifacts give you, and how to build toward something you can trust.
 
 ---
 
-## What is an eval?
+## What is an eval — honestly
 
-An eval is a repeatable test that checks whether your agent's outputs match your Product Standard.
+An eval is a repeatable check on whether your agent's outputs match a defined standard. The goal isn't to have evals. The goal is to understand what your agent is doing and improve it. Evals are a means.
 
-Without evals, you find out your agent drifted when a user complains. With evals, you catch it before it ships — and you can prove to yourself (and your team) that a prompt change actually improved things, rather than guessing.
+The most important thing most teams miss: **look at real outputs before you build any eval framework.** Read 20–50 actual outputs from your agent. Notice what surprises you, what feels off, what's better than expected. That error analysis is more valuable than five automated checks on synthetic inputs. You cannot build a good eval for a failure mode you haven't seen yet.
 
-Most teams skip evals because they think it means a lot of infrastructure. It doesn't. Your first eval is three steps:
+Evals are a progression — not a destination you reach by running one tool:
 
-1. Take an output your agent produced
-2. Show it to a judge (another LLM, using your judge prompt)
-3. See if the judge returns PASS or FAIL
+1. **Manual review** — read real outputs, notice patterns, build intuition. This is not a lazy shortcut. It's the required foundation.
+2. **Simple rule-based checks** — string matches, regex, format validators. Cheap, fast, no LLM call required. Catches the obvious failures reliably.
+3. **LLM-as-judge** — an LLM evaluates your agent's outputs against a rubric. More flexible, but requires calibration. A judge prompt is not calibrated until you've checked its verdicts against your own human judgments on real examples.
+4. **Automated suites** — run checks at scale, on schedule, on every prompt change. Only worth building once steps 1–3 are stable.
 
-That's it. You can do it in under two minutes with no tooling.
+Most teams jump to step 4 and wonder why their evals don't catch real problems.
 
 ---
 
-## The three artifacts — and what each one does
+## The three artifacts — what they are and what they aren't
 
-`/lignos-canvas` generates three things. Here's what each one is for:
+`/lignos-canvas` generates three things. Here's what each does — and where it falls short:
 
 ### Judge Prompt
-A system prompt that turns any LLM into a calibrated evaluator for your specific agent. It encodes your Product Standard — tone, format, what's a FAIL, what signals value was delivered. You paste this into an eval tool as the "evaluator" or "scorer."
+A system prompt that instructs an LLM to evaluate your agent's outputs against your Product Standard — tone, format, what constitutes a failure, what signals value was delivered.
 
-**Think of it as:** The rubric your agent's outputs get graded against.
+**What it is:** A starting rubric derived from your requirements.
+**What it isn't:** A calibrated evaluator. Until you run it against real outputs and check its verdicts against your own judgment, you don't know if it agrees with *you* — only that it agrees with *itself*. Calibrate it: label 10–20 real outputs yourself, then see how many the judge agrees with. Adjust where it diverges.
 
 ### Scenario Seeds
-Five test inputs designed to find the edges of your standard. Two are anti-pattern triggers (they should produce a FAIL if your agent is drifting). Three are clean inputs that should PASS. Together they give you a starter test dataset without having to collect real-world examples first.
+Five synthetic test inputs — two designed to trigger the anti-pattern, three clean passes. Generated from your requirements before you have real data.
 
-**Think of it as:** Your first test suite, derived directly from your anti-pattern.
+**What they are:** A starting dataset that lets you run *something* before real usage data exists.
+**What they aren't:** A representative test suite. Real inputs will surface failure modes the seeds never anticipated. Replace or supplement these with actual examples from production as soon as you have them. A suite of 50 real examples beats 5 synthetic ones every time.
 
 ### Blocking Assertion
-A string-match check — the literal phrase your agent should never produce (from your anti-pattern definition). This runs before the judge prompt and catches the most common failure instantly, without burning API credits on an LLM call.
+A string-match check on the literal phrases your agent should never produce.
 
-**Think of it as:** The cheapest possible check. Run it first.
-
----
-
-## Your first eval run — right now, no tooling
-
-Copy the Judge Prompt from your canvas session. Open Claude, ChatGPT, or any LLM chat. Paste one of your agent's real outputs (or use Seed 3 from your Scenario Seeds — the first clean-input seed). Then send this message:
-
-> "Using the judge prompt below, evaluate the output I've pasted. Return PASS or FAIL and one sentence explaining why."
-
-You'll see whether the judge prompt is calibrated before you set up any platform. If the judge flags something you disagree with, adjust the prompt — then re-run. Do this two or three times before automating.
+**What it is:** The cheapest, most reliable check in your stack. Run it before the judge.
+**What it isn't:** Comprehensive. Paraphrases of the same failure won't be caught. Treat it as a floor, not a ceiling.
 
 ---
 
-## Pick your platform
+## Step 0 — read outputs before you automate anything
 
-Once you're confident in your judge prompt, automate it:
+Before touching any tool: collect 20 real outputs from your agent and read them. Ask yourself: what surprised me? What felt slightly off but I couldn't say why? What was better than I expected?
 
-### Local evals — Promptfoo (recommended for most builders)
+Write down what you notice. That list becomes your real anti-pattern inventory — more specific than anything generated from requirements alone. Then use the judge prompt and seeds as a starting framework against that inventory.
+
+---
+
+## Step 1 — calibrate your judge manually
+
+Copy the Judge Prompt from your canvas session. Take 10 real outputs from your agent. For each one, write your own judgment first (PASS or FAIL, one sentence why). Then run the judge on the same outputs. Count agreements and disagreements.
+
+If the judge disagrees with you on more than 2–3 out of 10: find the pattern in the disagreements, adjust the judge prompt, re-run. Repeat until the judge catches what *you* catch.
+
+Only automate a judge you've calibrated this way.
+
+```
+"Using the judge prompt below, evaluate the output I've pasted.
+Return PASS or FAIL and one sentence explaining why."
+```
+
+---
+
+## Step 2 — add rule-based checks first
+
+Before automating the LLM judge, add the simplest checks possible:
+
+- **String match:** does the output contain the blocking assertion phrases? Fast, free, reliable.
+- **Format check:** is the output the right length? Does it have the expected structure?
+- **Explicit rule violations:** things the agent must *never* do — check these with code, not LLMs.
+
+These simple checks will catch a meaningful percentage of failures without any LLM cost. Add the judge on top of them, not instead of them.
+
+---
+
+## Step 3 — automate once you trust it
+
+Once your judge is calibrated and your rule-based checks are stable, automate:
+
+### Local — Promptfoo (recommended to start)
 
 **No account. No cloud. One command.**
 
-[Promptfoo](https://promptfoo.dev) runs all five Scenario Seeds against your agent from a single YAML file. You get a pass/fail table in your terminal and a visual report locally. No data leaves your machine.
+[Promptfoo](https://promptfoo.dev) runs your checks from a YAML config. Results in the terminal. No data leaves your machine.
 
 → [`integrations/promptfoo.md`](promptfoo.md) — step-by-step setup
 
 ---
 
-### Cloud evals — tracking over time
-
-**Free tiers available.**
+### Cloud — tracking over time
 
 | Platform | Best for |
 |----------|---------|
-| [Braintrust](braintrust.md) | Easiest cloud setup; great UI for reviewing eval history |
-| [LangSmith](langsmith.md) | Already using LangSmith for traces; evals alongside them |
+| [Braintrust](braintrust.md) | Easiest cloud setup; good for reviewing eval history with a team |
+| [LangSmith](langsmith.md) | Already using LangSmith for traces; run evals in the same platform |
 
-Start local. Move to cloud when you want a persistent eval history or team access to results.
+Start local. Move to cloud when you need persistent history or team access.
 
 ---
 
-## What the artifacts map to in each tool
+## What the artifacts map to
 
-| Artifact from `/lignos-canvas` | Where it goes |
-|-------------------------------|---------------|
-| **Judge Prompt** | Evaluator / scorer system prompt in any eval tool |
-| **Scenario Seeds** | Test dataset — seeds 1–2 should FAIL, seeds 3–5 should PASS |
-| **Blocking Assertion** | Pre-check before the judge runs; string-match assertion |
+| Artifact | Role in your eval stack |
+|----------|------------------------|
+| **Judge Prompt** | LLM-as-judge evaluator — calibrate before automating |
+| **Scenario Seeds** | Starting dataset — replace with real examples as soon as possible |
+| **Blocking Assertion** | Cheapest check — run before the judge, every time |
 
-Run `/lignos-eval` at any time to regenerate these three artifacts from `.lignos/canvas.md` if your standard changes.
+Run `/lignos-eval` any time to regenerate from `.lignos/canvas.md`, or bring a real output that surprised you and it'll help you capture it as a named scenario.
