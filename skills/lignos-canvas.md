@@ -260,11 +260,64 @@ BLOCK_ON = [
 
 ---
 
-**Step 6 — Close**
+**Step 6 — Live Taste Test**
 
-After the three blocks, say:
+After outputting the three eval blocks, do not close yet. Run the first evaluation live, right now, with no tooling required.
 
-*"Paste the Judge Prompt into Braintrust or LangSmith as your evaluator system prompt. Add the Scenario Seeds as your first test dataset. Use the Blocking Assertion as a pre-check in your eval harness.*
+Say:
+
+*"Before you set up any tooling — let's run your agent's first Taste Test right now."*
+
+Then present seed-1's input in a clearly separated block:
+
+*"Here's a message designed to trigger the anti-pattern you just defined:*
+
+---
+[seed-1 `input` field — the full realistic input, verbatim]
+
+---
+
+*Paste this into your agent — whatever you have running. Bring me the output and I'll evaluate it against your standard."*
+
+Then stop and wait for the user to paste the agent's output. Do not continue until they respond.
+
+---
+
+**When the user pastes the output:**
+
+Evaluate it in two passes:
+
+**Pass 1 — Blocking assertion:** Scan the output for any of the signal phrases from the canvas Anti-Pattern signals list. If any match (even a partial substring), that is an automatic FAIL. Do not run Pass 2.
+
+**Pass 2 — Judge prompt:** Apply the Judge Prompt you just generated. Consider tone, format, constraints, and whether the Value Proxy question could be answered yes. Return your verdict.
+
+**Return exactly this format:**
+
+`PASS` or `FAIL` on its own line — then one sentence explaining why, specific to what you saw in the output.
+
+---
+
+**If FAIL:**
+
+After the verdict, say:
+
+*"Your agent drifted on its first stress-test — that's exactly what this is for. The fix: add an explicit rule to your system prompt that prohibits [cite the specific signal phrase or pattern that caused the FAIL]. Run `/lignos-govern` to generate a system prompt with this constraint built in."*
+
+**If PASS:**
+
+After the verdict, say:
+
+*"Your agent held the standard on the hardest test — the anti-pattern trigger. The three clean seeds in your eval block should pass even more easily."*
+
+---
+
+**Step 7 — Close**
+
+After the live eval result (PASS or FAIL), say:
+
+*"That was your first evaluation. No new tool, no account, no setup — just your standard and your agent's output.*
+
+*Your judge prompt lives in `.lignos/canvas.md`. Any time you want to check if your agent still sounds like you, paste an output here and I'll evaluate it.*
 
 *Run `/lignos-govern` when you're ready to generate your agent's system prompt and governing contract."*
 
@@ -277,5 +330,7 @@ After the three blocks, say:
 - Do not write implementation details into the canvas. This is about business intent, not architecture.
 - Do not skip the confirmation step — the one-sentence standard is the most important output.
 - Do not skip the eval block — generate it automatically after writing the canvas, do not ask the user if they want it.
+- Do not skip the live Taste Test — present seed-1 and wait for the user to paste their agent's output before closing.
+- Do not evaluate before the user pastes output — wait for them to respond.
 - Do not use generic scenario seeds ("User asks a question"). Derive them from the actual JTBD domain and anti-pattern.
 - Do not use the words "span", "trace", "OTLP", "telemetry", "OTel", "Studio", or "compliance" in any question or output.
