@@ -25,20 +25,34 @@ CLAUDE.md
 
 ## Which eval tool?
 
-After `/lignos-canvas` you have a Judge Prompt, Scenario Seeds, and a Blocking Assertion. You don't need a specific platform — pick the option that matches where you are:
+An eval checks whether your agent's outputs match the standard you just defined. Most builders skip this step — and find out something drifted when a user complains. Evals catch that before it ships.
+
+After `/lignos-canvas` you have three artifacts that make your first eval instant:
+
+- **Judge Prompt** — the standard, encoded as an LLM evaluator system prompt
+- **Scenario Seeds** — 5 test inputs (2 designed to fail, 3 designed to pass)
+- **Blocking Assertion** — a string match: the phrase your agent must never produce
+
+**If you've never run an eval before — start here, right now, no install:**
+
+Copy the Judge Prompt from your canvas output. Open Claude, ChatGPT, or any LLM chat. Paste one of your agent's real outputs. Send:
+
+> "Using the judge prompt below, evaluate this output. Return PASS or FAIL and one sentence explaining why."
+
+That's a valid eval. Do it two or three times until you trust the judge is calibrated — then automate it.
+
+**Pick your tool:**
 
 | I want to… | Use |
 |---|---|
-| Try the judge prompt right now, no setup | **Manual** — paste into any LLM chat |
-| Run proper evals locally, no account | **Promptfoo** — one command, YAML config |
+| Try the judge prompt right now, no setup | **Manual** — paste into any LLM chat (start here) |
+| Run all 5 seeds against my agent, no account | **Promptfoo** — one command, YAML config |
 | Track evals over time with a nice UI | **Braintrust** — free tier, easiest cloud option |
 | Already using LangSmith for traces | **LangSmith** — native evaluator integration |
 
-**Fastest start (no account, no install):** Copy the Judge Prompt from your `/lignos-canvas` output. Open Claude, ChatGPT, or any LLM chat. Paste a sample output from your agent. Ask: "Based on this judge prompt, does this output PASS or FAIL?" That's a valid eval run.
+Full guide — what evals are, what each artifact does, step-by-step: [`integrations/README.md`](../integrations/README.md)
 
-**Local evals with Promptfoo (recommended for most builders):** No account. Runs in your terminal. One YAML file. See [`integrations/promptfoo.md`](../integrations/promptfoo.md).
-
-**Cloud evals:** [`integrations/braintrust.md`](../integrations/braintrust.md) · [`integrations/langsmith.md`](../integrations/langsmith.md)
+Local eval setup: [`integrations/promptfoo.md`](../integrations/promptfoo.md) · Cloud: [`integrations/braintrust.md`](../integrations/braintrust.md) · [`integrations/langsmith.md`](../integrations/langsmith.md)
 
 ---
 
