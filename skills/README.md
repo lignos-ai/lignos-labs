@@ -16,8 +16,8 @@ CLAUDE.md
 
 | Step | Skill | Time | Output |
 |------|-------|------|--------|
-| 1 | [`/lignos-canvas`](./lignos-canvas.md) | 5–10 min | `.lignos/canvas.md` — your Product Standard |
-| 2 | [`/lignos-eval`](./lignos-eval.md) | ~2 min | Judge prompt + scenario seeds + blocking assertion in chat |
+| 1 | [`/lignos-canvas`](./lignos-canvas.md) | 10–15 min | `.lignos/canvas.md` + judge prompt + live Taste Test (PASS/FAIL in chat) |
+| 2 | [`/lignos-eval`](./lignos-eval.md) | ~2 min | Regenerate judge prompt + scenario seeds + blocking assertion from canvas |
 | 3 | [`/lignos-govern`](./lignos-govern.md) | ~2 min | `constitution.md`, `manifest.yaml`, `CLAUDE.md` |
 | 4 | [`/lignos-score`](./lignos-score.md) | ~3 min | Pre-ship pass/fail across 5 dimensions |
 
@@ -97,7 +97,7 @@ Sign up at [lignos-ai.github.io/lignos-platform](https://lignos-ai.github.io/lig
 
 ## When to run each skill
 
-**Canvas** — before writing any code. Replaces "what are the requirements?" with "what is the exact standard this agent must maintain?" Outputs the eval block automatically at the end.
+**Canvas** — before writing any code. Replaces "what are the requirements?" with "what is the exact standard this agent must maintain?" Outputs the eval block automatically, then runs your agent's first Taste Test live in chat — paste one output in, get PASS or FAIL back before the session closes.
 
 **Eval** — any time after canvas. Regenerates the judge prompt, scenario seeds, and blocking assertion from `.lignos/canvas.md`. Paste into Braintrust or LangSmith in under two minutes.
 

@@ -46,12 +46,7 @@ Same as Cursor — each skill is self-contained plain text. Paste canvas skill f
 
 ---
 
-**After `/lignos-canvas`:** you have `.lignos/canvas.md` — your agent's Product Standard.
-
-**After `/lignos-eval`:** three artifacts appear in the chat, no server:
-- **Judge prompt** — paste into Braintrust or LangSmith as your evaluator
-- **Scenario seeds** — your first test dataset, derived from your anti-pattern
-- **Blocking assertion** — string-match pre-check that catches the most common failure before the judge runs
+**After `/lignos-canvas`:** you have `.lignos/canvas.md` — your agent's Product Standard, a judge prompt, scenario seeds, and a blocking assertion. Then the skill runs your agent's first evaluation live — paste one output in, get PASS or FAIL back, no account needed.
 
 ---
 
@@ -64,11 +59,13 @@ flowchart TD
     subgraph fast["Fast path — no server, ~15 min"]
         Canvas["/lignos-canvas\nAnswer 4 questions"]
         EvalBlock["Judge Prompt\nScenario Seeds\nBlocking Assertion"]
+        TasteTest["Live Taste Test\nPaste output → PASS or FAIL"]
         Canvas -->|"outputs automatically"| EvalBlock
+        EvalBlock -->|"runs live in chat"| TasteTest
     end
 
-    EvalBlock --> BT["Braintrust"]
-    EvalBlock --> LS["LangSmith"]
+    TasteTest --> BT["Braintrust"]
+    TasteTest --> LS["LangSmith"]
 
     Canvas --> CF[".lignos/canvas.md\nProduct Standard"]
 
