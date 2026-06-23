@@ -46,6 +46,8 @@ Same as Cursor — paste the canvas skill, send "Begin." Each skill is self-cont
 
 **After `/lignos-canvas`:** you have `.lignos/canvas.md` — your agent's Product Standard, a judge prompt, scenario seeds, and a blocking assertion. Then the skill runs your agent's first evaluation live — paste one output in, get PASS or FAIL back, no account needed.
 
+**The seeds are synthetic starters.** They're derived from your requirements, not from real usage data. Replace them with actual examples as soon as you have them.
+
 ---
 
 ## How it works
@@ -72,13 +74,18 @@ Full install + usage for all environments: [`skills/README.md`](skills/README.md
 
 ---
 
-## What Lignos is not
+## What Lignos gives you — and what it doesn't
 
-Not an error tracker. Not something you wire up after your agent breaks.
+**What you get:** A judge prompt, five synthetic scenario seeds, and a blocking assertion — all derived from your requirements in one session. A foundation to build from before you have real usage data.
 
-Reactive evals are built from failures you already had — useful, but slow. You find out the agent drifted when a user complains, then reverse-engineer what the standard should have been. Lignos builds the eval standard from requirements before the agent exists, so the first failure you catch is in a test, not in production.
+**What you still need:**
+- Real examples from actual usage to replace or supplement the synthetic seeds. Five AI-generated scenarios are not a representative test suite.
+- Human calibration. The judge prompt is generated from the same session as your standard — you don't yet know whether it agrees with *you*, only that it agrees with *itself*. Label a sample of real outputs and check.
+- Ongoing updates as the input distribution shifts. The canvas captures your requirements at V0. The world changes.
 
-Eval platforms (Braintrust, LangSmith, Promptfoo) run your tests — Lignos authors the standard those tests measure against, derived from what the agent is hired to do.
+**The risk to avoid:** Treating a `.lignos/canvas.md` and five seeds as validated evals. The value Lignos provides is lowering the cost of starting — not replacing the work of real eval engineering. Use it as your eval V0, then build from real data.
+
+**What Lignos is not:** An error tracker. Not something you wire up after your agent breaks. Reactive evals are built from failures you already had. Lignos builds the eval standard from requirements before the agent exists — so the cycle starts shorter. Eval platforms (Braintrust, LangSmith, Promptfoo) run your tests. Lignos authors the standard those tests measure against.
 
 ---
 
