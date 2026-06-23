@@ -52,30 +52,20 @@ Same as Cursor — paste the canvas skill, send "Begin." Each skill is self-cont
 
 ```mermaid
 flowchart TD
-    Start(["Your agent\nno standard yet"]) --> Canvas
+    Start(["Your agent"]) --> Canvas
 
-    subgraph fast["Fast path — no server, ~15 min"]
-        Canvas["/lignos-canvas\nAnswer 4 questions"]
-        EvalBlock["Judge Prompt\nScenario Seeds\nBlocking Assertion"]
-        TasteTest["Live Taste Test\nPaste output → PASS or FAIL"]
-        Canvas -->|"outputs automatically"| EvalBlock
-        EvalBlock -->|"runs live in chat"| TasteTest
-    end
+    Canvas["/lignos-canvas\n4 questions"]
+    Canvas --> Standard[".lignos/canvas.md\nProduct Standard"]
+    Canvas --> EvalSet["Judge Prompt · Seeds · Blocking Assertion\nLive Taste Test → PASS/FAIL · Your Standard Declared"]
 
-    TasteTest --> BT["Braintrust"]
-    TasteTest --> LS["LangSmith"]
+    Standard --> Govern["/lignos-govern\nConstitution · CLAUDE.md · manifest"]
+    Govern --> Score["/lignos-score\npre-ship pass/fail"]
+    Score --> Ship(["Ship"])
 
-    Canvas --> CF[".lignos/canvas.md\nProduct Standard"]
+    EvalSet --> Platforms["Braintrust · LangSmith · Promptfoo"]
 
-    subgraph full["Full path — governed agent"]
-        CF --> Govern["/lignos-govern"]
-        Govern --> SP[".lignos/constitution.md\nsystem prompt"]
-        Govern --> MF[".lignos/manifest.yaml"]
-        Govern --> CM["CLAUDE.md\nalways-on context"]
-        SP --> Score["/lignos-score\npre-ship pass/fail"]
-    end
-
-    MF -.->|"coming soon"| Studio["Lignos Studio\ndrift monitoring"]
+    Ship -->|"real output\nsurprises you"| Intake["/lignos-eval\nrate it · name it · capture it"]
+    Intake -->|"new scenario or\ngold standard"| EvalSet
 ```
 
 Full install + usage for all environments: [`skills/README.md`](skills/README.md)
