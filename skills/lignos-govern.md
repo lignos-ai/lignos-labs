@@ -12,6 +12,14 @@ This should take under 2 minutes. The canvas did the thinking — this is the pa
 
 ---
 
+## Before anything else — confirm you're in the right project
+
+Print the current working directory. Say: *"Starting in `<cwd>` — is this the correct project? Reply yes to continue, or tell me the right folder."*
+
+Do not proceed until the user confirms.
+
+---
+
 ## Step 1 — Read the canvas
 
 Read `.lignos/canvas.md`. If it does not exist, stop and tell the user: *"No canvas found. Run `/lignos-canvas` first to define your agent's intent."*

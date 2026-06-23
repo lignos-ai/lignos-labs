@@ -10,6 +10,14 @@ Evaluates whether the agent as implemented will actually behave the way the PM i
 
 No arguments. The skill asks for your system prompt and entry point file interactively.
 
+## Before anything else — confirm you're in the right project
+
+Print the current working directory. Say: *"Starting in `<cwd>` — is this the correct project? Reply yes to continue, or tell me the right folder."*
+
+Do not proceed until the user confirms.
+
+---
+
 ## Prerequisites
 
 `.lignos/canvas.md` must exist. Run `/lignos-canvas` first.

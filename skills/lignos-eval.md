@@ -15,6 +15,14 @@ No server. No install. Everything comes from `.lignos/canvas.md`.
 
 ## Steps
 
+**Before anything else — confirm you're in the right project**
+
+Print the current working directory. Say: *"Starting in `<cwd>` — is this the correct project? Reply yes to continue, or tell me the right folder."*
+
+Do not proceed until the user confirms.
+
+---
+
 **Step 1 — Find the canvas**
 
 Check whether `.lignos/canvas.md` exists.
