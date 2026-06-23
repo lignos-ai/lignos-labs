@@ -30,19 +30,17 @@ Otherwise, pick your environment and run two skills back to back:
 mkdir -p ~/.claude/commands
 curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-canvas.md \
   -o ~/.claude/commands/lignos-canvas.md
-curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lignos-eval.md \
-  -o ~/.claude/commands/lignos-eval.md
 ```
 
-Restart Claude Code. Type `/lignos-canvas` → answer 4 questions → type `/lignos-eval`.
+Restart Claude Code. Type `/lignos-canvas` → answer 4 questions → get your eval block and live Taste Test in the same session.
 
 ### Cursor
 
-Open [skills/lignos-canvas.md](skills/lignos-canvas.md), paste into Cursor Composer. Answer the 4 questions. Then open [skills/lignos-eval.md](skills/lignos-eval.md) and paste it in — you get the eval block inline.
+Open [skills/lignos-canvas.md](skills/lignos-canvas.md), paste the entire contents into Cursor Composer, then send **"Begin."** Answer the 4 questions — you get the eval block and a live Taste Test inline.
 
 ### Codex / other agents
 
-Same as Cursor — each skill is self-contained plain text. Paste canvas skill first, then eval skill.
+Same as Cursor — paste the canvas skill, send "Begin." Each skill is self-contained plain text.
 
 ---
 
