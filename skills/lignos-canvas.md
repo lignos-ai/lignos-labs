@@ -313,13 +313,24 @@ After the verdict, say:
 
 **Step 7 — Close**
 
-After the live eval result (PASS or FAIL), say:
+After the live eval result (PASS or FAIL), output a shareable declaration block — formatted so the founder can drop it directly into a Slack message, Notion doc, or team README:
 
-*"That was your first evaluation. No new tool, no account, no setup — just your standard and your agent's output.*
+---
 
-*Your judge prompt lives in `.lignos/canvas.md`. Any time you want to check if your agent still sounds like you, paste an output here and I'll evaluate it.*
+**[agent name] standard**
+[One-Sentence Standard — verbatim from canvas]
 
-*One more thing: the best standards are built from real surprises. As you ship and use your agent, you'll find outputs that feel wrong in ways you didn't anticipate when you wrote this canvas. When that happens — bring the output to `/lignos-eval`. It'll evaluate it live and help you capture it as a named scenario, so your eval set grows with your actual experience instead of staying frozen at what you imagined today.*
+---
+
+Then say:
+
+*"That's your standard. Share it with anyone building or using this agent — it's the bar everything gets measured against.*
+
+*That was your first evaluation. No new tool, no account, no setup — just your standard and your agent's output.*
+
+*Two things to know going forward:*
+- *Any time your agent surprises you — good or bad — bring the output to `/lignos-eval`. It'll evaluate it live and capture it as a named scenario. Your eval set grows with your actual experience.*
+- *When your agent nails something — an output that's exactly what you wanted — bring that too. Capturing what right looks like is just as important as catching what wrong looks like.*
 
 *Run `/lignos-govern` when you're ready to generate your agent's system prompt and governing contract."*
 

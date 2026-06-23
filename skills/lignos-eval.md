@@ -161,46 +161,89 @@ After the three artifacts, say:
 
 **Step 5 — Intake mode (living eval)**
 
-This step activates when the user brings a real output that surprised them — something that felt wrong or unexpectedly right — instead of asking to regenerate the eval block.
+This step has two paths depending on whether the user brings a failure or a win.
+
+**Detect which path:**
+- **Failure path:** user says "this felt off," "this came out wrong," "this surprised me," or pastes an output they're dissatisfied with
+- **Gold standard path:** user says "my agent nailed this," "this is exactly what I wanted," "this went perfectly," or pastes an output they're proud of
+- **Ambiguous:** user pastes an output without context → evaluate it first; route to the appropriate path based on PASS or FAIL
+
+---
+
+### Failure path
 
 **1. Evaluate it**
 
-Apply the judge prompt from Step 3 mentally (blocking assertion check first, then full judge). Return:
+Apply the judge prompt mentally (blocking assertion check first, then full judge). Return:
 
-`PASS` or `FAIL` — one sentence explaining exactly what you observed.
+`FAIL` — one sentence explaining exactly what drifted.
 
 **2. Name the failure mode**
 
-If FAIL, ask: *"What would you call this in one phrase — something like 'missed the urgency signal' or 'over-qualified the answer'?"*
+Ask: *"What would you call this in one phrase — something like 'missed the urgency signal' or 'over-qualified the answer'?"*
 
-If they don't have a name, suggest one based on what you saw drift.
+If they don't have a name, suggest one based on what you saw.
 
 **3. Capture it as a new scenario**
-
-Output a formatted seed they can add to their seed list:
 
 ```json
 {
   "id": "seed-[next available number]",
   "label": "[failure mode name]",
-  "input": "[the input that produced this output — ask the user if not provided]",
+  "input": "[the input — ask if not provided]",
   "expectedBehavior": "[what a passing output would have done instead]",
   "antiPatternTrigger": true,
-  "failSignal": "[the specific phrase or pattern that caused the FAIL, or null if it was a judgment issue]",
+  "failSignal": "[the specific phrase or pattern that caused the FAIL, or null if it was a judgment call]",
   "discoveredInProduction": true,
-  "notes": "[one sentence on what context tends to trigger this pattern]"
+  "notes": "[one sentence on what context tends to trigger this]"
 }
 ```
 
 **4. Check for a canvas gap**
 
-If the failure revealed a drift signal not currently in `canvas.md`'s Anti-Pattern bullet list, say:
+If the failure revealed a drift signal not in `canvas.md`'s Anti-Pattern signals:
 
-*"This suggests a new drift signal your canvas doesn't cover yet: '[signal]'. Consider adding it to `.lignos/canvas.md` so future evals catch it automatically. Run `/lignos-eval` again after updating the canvas — it'll rebuild the blocking assertion with the new signal included."*
+*"This suggests a new drift signal your canvas doesn't cover yet: '[signal]'. Consider adding it to `.lignos/canvas.md` — run `/lignos-eval` after updating and it'll rebuild the blocking assertion with the new signal included."*
 
 If the existing signals already covered it:
 
-*"Your existing standard caught this — you didn't have a gap, just incomplete seed coverage. Add this scenario to your dataset to improve coverage of that signal."*
+*"Your standard already catches this — you had a coverage gap, not a standard gap. Add this scenario to improve coverage of that signal."*
+
+---
+
+### Gold standard path
+
+This activates when the user brings an output that nailed it. Capturing what right looks like is as important as catching what wrong looks like.
+
+**1. Evaluate it**
+
+Apply the judge prompt mentally. Return:
+
+`PASS` — one sentence naming exactly what made it work.
+
+**2. Name what it demonstrates**
+
+Ask: *"What made this one right? Name the thing it did that you'd want every output to do."*
+
+Suggest a name if they don't have one — something like "confident triage with named cause" or "direct resolution without deflection."
+
+**3. Capture it as a gold standard example**
+
+```json
+{
+  "id": "gold-[next available number]",
+  "label": "[what this demonstrates]",
+  "input": "[the input — ask if not provided]",
+  "output": "[the output that nailed it]",
+  "whyItWorks": "[one sentence on what this shows about the standard at its best]",
+  "goldStandard": true,
+  "discoveredInProduction": true
+}
+```
+
+**4. Affirm what this means**
+
+Say: *"This is your reference point. When a future output feels slightly off but you can't say why, compare it to this one — that feeling is usually the distance between what you just captured and what the agent produced."*
 
 ---
 
@@ -212,4 +255,6 @@ If the existing signals already covered it:
 - Do not generate more than 5 seeds in generate mode — quality over quantity.
 - Do not auto-update `canvas.md` in intake mode — the user should consciously decide whether a new signal belongs in their standard.
 - Do not generate multiple new seeds from one surprising output — one output, one named scenario.
+- Do not skip the gold standard path — capturing what right looks like is as important as catching what wrong looks like.
+- Do not omit the `output` field from gold standard entries — it's the reference point, not just the input.
 - Do not mention spans, traces, OTLP, or telemetry in your output.
