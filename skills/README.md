@@ -1,6 +1,6 @@
 # Lignos Skills — Overview
 
-Four skills that take an agent from idea to governed production — no server required for any of them.
+Three core skills that take an agent from idea to governed production, plus one optional Studio-prep skill. No server required for any of them.
 
 ## The workflow
 
@@ -8,9 +8,8 @@ Four skills that take an agent from idea to governed production — no server re
 /lignos-canvas  →  /lignos-eval  →  paste into Braintrust / LangSmith   ← fast path
        ↓
 /lignos-govern  →  ship
-       ↓                  ↓
-constitution.md       pass/fail
-manifest.yaml
+       ↓
+constitution.md
 CLAUDE.md
 ```
 
@@ -18,8 +17,8 @@ CLAUDE.md
 |------|-------|------|--------|
 | 1 | [`/lignos-canvas`](./lignos-canvas.md) | 10–15 min | `.lignos/canvas.md` + judge prompt + live Taste Test (PASS/FAIL in chat) |
 | 2 | [`/lignos-eval`](./lignos-eval.md) | ~2 min | Regenerate judge prompt + scenario seeds + blocking assertion from canvas |
-| 3 | [`/lignos-govern`](./lignos-govern.md) | ~2 min | `constitution.md`, `manifest.yaml`, `CLAUDE.md` |
-[`/lignos-scope`](./lignos-scope.md) is available separately — generates instrumentation code to prepare for Lignos Studio (coming soon).
+| 3 | [`/lignos-govern`](./lignos-govern.md) | ~2 min | `constitution.md` + `CLAUDE.md` — system prompt ready to paste |
+| — | [`/lignos-scope`](./lignos-scope.md) *(optional)* | ~5 min | `manifest.yaml` + instrumentation snippet for Lignos Studio |
 
 ## Which eval tool?
 
