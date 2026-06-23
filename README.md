@@ -32,7 +32,7 @@ curl -sL https://raw.githubusercontent.com/lignos-ai/lignos-labs/main/skills/lig
   -o ~/.claude/commands/lignos-canvas.md
 ```
 
-Restart Claude Code. Type `/lignos-canvas` → answer 4 questions → get your eval block and live Taste Test in the same session.
+Restart Claude Code. Type `run /lignos-canvas` → answer 4 questions → get your eval block and live Taste Test in the same session.
 
 ### Cursor
 
