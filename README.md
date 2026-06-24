@@ -1,8 +1,8 @@
 # Lignos Labs
 
-**Turn your agent's requirements into evals — before you build. Ship something your team can actually trust.**
+**Accelerate your agent building. Answer four questions in Claude or Cursor — get an eval-ready Product Standard and improved agent prompts in your repo in about 15 minutes.**
 
-Most teams build agents first and discover what "good" means after the first production failure. Lignos flips that cycle. Answer four questions about what your agent is hired to do and you get a targeted judge prompt, scenario seeds, and a live eval run — all derived from your requirements, in the same session. No account. No install. Works in any AI coding environment.
+No account. No install. Works in any AI coding environment.
 
 ---
 
