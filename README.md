@@ -1,8 +1,8 @@
 # Lignos Labs
 
-**Accelerate your agent building. Answer four questions in Claude or Cursor — get an eval-ready Product Standard and improved agent prompts in your repo in about 15 minutes.**
+**Build agents that do what you actually want — faster.**
 
-No account. No install. Works in any AI coding environment.
+Most agents drift from your intent the moment they hit real inputs. Answer four questions — get a system prompt your agent actually follows, a judge prompt to verify it, and your first eval run. All in one session, no setup. Works in any AI coding environment.
 
 ---
 
