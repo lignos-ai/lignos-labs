@@ -62,7 +62,7 @@ flowchart TD
     Canvas --> Standard[".lignos/canvas.md<br/>Product Standard"]
     Canvas --> EvalSet["Judge Prompt · Seeds · Blocking Assertion<br/>Live Taste Test · PASS/FAIL · Standard Declared"]
 
-    Standard --> Govern["/lignos-govern<br/>Constitution · CLAUDE.md"]
+    Standard --> Govern["/lignos-govern<br/>Constitution · system_prompt.txt · CLAUDE.md"]
     Govern --> Ship(["Ship"])
     Govern -.->|"optional — Studio prep"| Scope["/lignos-scope<br/>manifest.yaml · snippet"]
 
