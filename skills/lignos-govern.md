@@ -128,11 +128,15 @@ Apply any corrections before writing.
 
 ---
 
-## Step 5 — Write the file
+## Step 5 — Write the files
 
-Write to `.lignos/constitution.md`.
+Write two files:
 
-If the file already exists, show what changed (the one-sentence standard, at minimum) and ask before overwriting.
+**`.lignos/constitution.md`** — the full governing document (human-readable reference, loaded by Claude Code via CLAUDE.md).
+
+**`.lignos/system_prompt.txt`** — only the text under `## System Prompt` in the constitution, with no headers, no section labels, no footer. This is the model-ready artifact: compact, no documentation overhead, safe to load directly into `system=` on every API call.
+
+If either file already exists, show what changed (the one-sentence standard, at minimum) and ask before overwriting.
 
 ---
 
@@ -169,6 +173,7 @@ Then write the Lignos context block to keep the standard in context for future s
 Never: [signal phrase 1] · [signal phrase 2] · [signal phrase 3] (add more if canvas has them)
 
 Governing document: `.lignos/constitution.md` — read this file for the full values, non-negotiables, and system prompt for this agent.
+Model-ready prompt: `.lignos/system_prompt.txt` — the prompt text only; load this into `system=` on every API call.
 ```
 
 ---
@@ -178,11 +183,11 @@ Governing document: `.lignos/constitution.md` — read this file for the full va
 Confirm all files are written. Then give placement instructions specific to their answer from Step 6:
 
 **If Claude API (Python or JS):**
-*"Open [the file found in Step 6, or 'your entry point']. Load the constitution from file — this way your agent picks up the updated standard automatically any time you re-run `/lignos-govern`, with no copy-pasting:"*
+*"Open [the file found in Step 6, or 'your entry point']. Load from `.lignos/system_prompt.txt` — it contains only the prompt text, so every token in `system=` is working instruction. Re-run `/lignos-govern` when the standard evolves and it updates automatically:"*
 
 ```python
-# .lignos/constitution.md is the single source of truth — update there, pick up here
-with open(".lignos/constitution.md") as f:
+# token-efficient: only the prompt text, no documentation overhead
+with open(".lignos/system_prompt.txt") as f:
     SYSTEM_PROMPT = f.read()
 
 response = client.messages.create(
@@ -192,7 +197,7 @@ response = client.messages.create(
 )
 ```
 
-*"Your agent now runs under the standard you defined. When the standard evolves — update the canvas, re-run `/lignos-govern`, and your agent picks it up at next startup."*
+*"`.lignos/constitution.md` is the human-readable version — read that when you want to understand or update the standard. `.lignos/system_prompt.txt` is what the model sees."*
 
 **If Claude Code (running skills like this one):**
 *"`CLAUDE.md` is already written — every Claude Code session in this project now starts with your standard in context. The system prompt in `constitution.md` is your reference; Claude Code reads `CLAUDE.md` automatically.*
