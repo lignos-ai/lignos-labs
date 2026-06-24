@@ -121,7 +121,8 @@ All generated files live under `.lignos/` at the project root:
 | File | Produced by | Purpose |
 |------|-------------|---------|
 | `.lignos/canvas.md` | `/lignos-canvas` | The authoritative intent definition — JTBD, standard, anti-pattern, value proxy |
-| `.lignos/constitution.md` | `/lignos-govern` | Agent Constitution + ready-to-paste system prompt |
+| `.lignos/constitution.md` | `/lignos-govern` | Full governing document — values, non-negotiables, reasoning rules; read by Claude Code via CLAUDE.md |
+| `.lignos/system_prompt.txt` | `/lignos-govern` | Prompt text only — load into `system=` on every API call; no documentation overhead |
 | `.lignos/manifest.yaml` | `/lignos-scope` | LignosManifest — Lignos Studio (coming soon) will verify every session against this |
 
 **Commit `.lignos/` to version control.** These are governing documents, not build artifacts — treat them the same way you'd commit a `CLAUDE.md` or `README.md`. Do not add `.lignos/` to `.gitignore`.
