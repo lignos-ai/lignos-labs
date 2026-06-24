@@ -168,7 +168,7 @@ Then write the Lignos context block to keep the standard in context for future s
 
 Never: [signal phrase 1] · [signal phrase 2] · [signal phrase 3] (add more if canvas has them)
 
-→ `.lignos/canvas.md` · `.lignos/constitution.md`
+Governing document: `.lignos/constitution.md` — read this file for the full values, non-negotiables, and system prompt for this agent.
 ```
 
 ---
@@ -178,11 +178,12 @@ Never: [signal phrase 1] · [signal phrase 2] · [signal phrase 3] (add more if 
 Confirm all files are written. Then give placement instructions specific to their answer from Step 6:
 
 **If Claude API (Python or JS):**
-*"Open the file where you make your `client.messages.create()` call — [name the file if you found it in Step 6, otherwise say 'your entry point']. Copy the text under `## System Prompt` in `.lignos/constitution.md` and set it as your `system` parameter:"*
+*"Open [the file found in Step 6, or 'your entry point']. Load the constitution from file — this way your agent picks up the updated standard automatically any time you re-run `/lignos-govern`, with no copy-pasting:"*
 
 ```python
-# copy the text under ## System Prompt in .lignos/constitution.md
-SYSTEM_PROMPT = """..."""
+# .lignos/constitution.md is the single source of truth — update there, pick up here
+with open(".lignos/constitution.md") as f:
+    SYSTEM_PROMPT = f.read()
 
 response = client.messages.create(
     model="claude-opus-4-8",
@@ -191,7 +192,7 @@ response = client.messages.create(
 )
 ```
 
-*"Your agent now runs under the standard you defined."*
+*"Your agent now runs under the standard you defined. When the standard evolves — update the canvas, re-run `/lignos-govern`, and your agent picks it up at next startup."*
 
 **If Claude Code (running skills like this one):**
 *"`CLAUDE.md` is already written — every Claude Code session in this project now starts with your standard in context. The system prompt in `constitution.md` is your reference; Claude Code reads `CLAUDE.md` automatically.*
