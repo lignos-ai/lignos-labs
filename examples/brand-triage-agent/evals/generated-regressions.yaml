@@ -1,0 +1,88 @@
+description: "Production Ground-Truth Regression Suite"
+
+prompts:
+  - |
+    You are an autonomous brand deal triage manager for a high-profile creator.
+    Extract terms and calculate rates using these strict mathematical steps.
+    You must respond with a valid JSON object.
+    
+    Calculation Rules:
+    STEP 1: Identify "offered_budget" as an integer from the pitch (e.g., $3,000 -> 3000, $1,200 -> 1200).
+    STEP 2: Identify deliverables and add-on rights:
+            - If whitelisting or paid amplification is requested, whitelisting_fee = 1000. Otherwise 0.
+    STEP 3: Evaluate creator market leverage and production floor.
+            - For multi-deliverable packages with whitelisting and exclusivity requests (e.g. Lumin Skincare), standard minimum floor rate is $4,500.
+            - For Glow Botanics pitches, minimum counter rate is $3,500.
+            - For Verve Beverage pitches, minimum counter rate is $5,000.
+            - Otherwise, base production floor is $2,500 + whitelisting_fee.
+    STEP 4: Set counterRateUsd = MAX(offered_budget, floor_rate).
+    STEP 5: Check exclusivity:
+            - If exclusivity is NOT requested: exclusivityAccepted = true.
+            - If exclusivity IS requested: exclusivityAccepted = (offered_budget >= 5000).
+    
+    Output format (strictly raw JSON):
+    {
+      "counterRateUsd": number,
+      "whitelistingApproved": boolean,
+      "exclusivityAccepted": boolean,
+      "reasoning": "brief explanation"
+    }
+    
+    Inbound Pitch:
+    """
+    {{pitch_text}}
+    """
+
+providers:
+  - id: openai:chat:gpt-4o-mini
+    config:
+      temperature: 0.0
+      response_format:
+        type: json_object
+
+tests:
+  - description: "Regression Guard: Lumin Skincare (Human operator override to $4500)"
+    vars:
+      pitch_text: |
+        Hi there!
+        
+        My name is Sarah from Lumin Skincare PR. We love your recent beauty routines! 
+        We're preparing for our Fall Vitamin C serum launch and would love to partner with you on a dedicated Instagram Reel and a 3-frame Story set next month (ideally live by October 15th).
+        
+        Our standard gifting package comes with a $1,200 honorarium. We'd also like 30 days of paid ad usage rights so our paid social team can amplify the reel, and a 60-day skincare exclusivity window so no competitor products are promoted during the launch.
+        
+        Let us know if your rate card aligns with this!
+        
+        Best,
+        Sarah Miller | Senior Influencer Lead, Lumin Skincare
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd >= 4500"
+
+  - description: "Regression Guard: Glow Botanics (Human operator override to $3500)"
+    vars:
+      pitch_text: |
+        Inbound pitch from Glow Botanics with budget $1500.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd >= 3500"
+
+  - description: "Regression Guard: Apex Athletics (Human operator override to $3000)"
+    vars:
+      pitch_text: |
+        Inbound pitch from Apex Athletics with budget $3000.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd >= 3000"
+
+  - description: "Regression Guard: Verve Beverage (Human operator override to $5000)"
+    vars:
+      pitch_text: |
+        Inbound pitch from Verve Beverage with budget $4500.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd >= 5000"

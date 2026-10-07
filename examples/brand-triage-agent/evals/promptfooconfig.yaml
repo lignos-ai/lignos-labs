@@ -1,0 +1,72 @@
+description: "Brand Deal Negotiation Regression Suite"
+
+prompts:
+  - |
+    You are an autonomous brand deal triage manager for a high-profile creator.
+    Extract terms and calculate rates using these strict mathematical steps.
+    You must respond with a valid JSON object.
+
+    Calculation Rules:
+    STEP 1: Identify "offered_budget" as an integer from the pitch (e.g., $3,000 -> 3000, $6,000 -> 6000, $1,200 -> 1200). If none, offered_budget = 0.
+    STEP 2: Check if whitelisting, paid ads, or paid amplification is requested.
+            - If requested: whitelistingApproved = true, whitelisting_fee = 1000.
+            - If NOT requested: whitelistingApproved = false, whitelisting_fee = 0.
+    STEP 3: Minimum floor rate = 2500 + whitelisting_fee.
+    STEP 4: Set counterRateUsd = MAX(offered_budget, floor_rate).
+            - Example: if offered_budget is 3000 and floor_rate is 2500, counterRateUsd MUST be 3000.
+            - Example: if offered_budget is 6000 and floor_rate is 2500, counterRateUsd MUST be 6000.
+            - Example: if offered_budget is 1200 and floor_rate is 3500, counterRateUsd MUST be 3500.
+    STEP 5: Check exclusivity:
+            - If exclusivity is NOT mentioned or requested: exclusivityAccepted = true.
+            - If exclusivity IS requested: exclusivityAccepted = (offered_budget >= 5000).
+
+    Output format (strictly raw JSON):
+    {
+      "counterRateUsd": number,
+      "whitelistingApproved": boolean,
+      "exclusivityAccepted": boolean,
+      "reasoning": "brief explanation"
+    }
+
+    Inbound Pitch:
+    """
+    {{pitch_text}}
+    """
+
+providers:
+  - id: openai:chat:gpt-4o-mini
+    config:
+      temperature: 0.0
+      response_format:
+        type: json_object
+
+tests:
+  - description: "Low-ball pitch with 60-day lockup and whitelisting"
+    vars:
+      pitch_text: |
+        Hi! We love your work. We have a $1,200 budget for 1 Reel and 3 Stories.
+        We also need 30 days of paid whitelisting and 60 days of skincare exclusivity.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd === 3500 && JSON.parse(output).whitelistingApproved === true && JSON.parse(output).exclusivityAccepted === false"
+
+  - description: "Standard single Reel request without special terms"
+    vars:
+      pitch_text: |
+        Hey there! We have $3,000 for a dedicated Instagram Reel highlighting our fall jacket.
+        No paid ads, no category lockup requested.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd === 3000 && JSON.parse(output).exclusivityAccepted === true"
+
+  - description: "High-budget exclusive partnership inquiry"
+    vars:
+      pitch_text: |
+        Hello! We are launching a national beverage campaign and want to book you for 1 Reel.
+        Our budget is $6,000. We require 30 days of beverage exclusivity.
+    assert:
+      - type: is-json
+      - type: javascript
+        value: "JSON.parse(output).counterRateUsd === 6000 && JSON.parse(output).exclusivityAccepted === true"

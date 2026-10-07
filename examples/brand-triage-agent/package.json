@@ -1,0 +1,29 @@
+{
+  "name": "brand-triage-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Canonical Lignos reference implementation: autonomous brand deal triage with a five-layer governance loop",
+  "type": "module",
+  "scripts": {
+    "agent": "tsx src/agent.ts",
+    "parser": "tsx src/parser.ts",
+    "evals:export": "tsx scripts/export-evals.ts",
+    "evals:compile": "tsx scripts/generate-evals.ts",
+    "test:evals": "promptfoo eval -c evals/generated-regressions.yaml --no-cache",
+    "simulate": "tsx scripts/simulate-adoption.ts",
+    "analytics": "tsx scripts/adoption-analytics.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@lignos/governance": "*",
+    "dotenv": "^18.0.4",
+    "openai": "^7.23.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "promptfoo": "^0.123.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

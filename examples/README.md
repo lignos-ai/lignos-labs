@@ -1,5 +1,7 @@
 # Lignos Examples — Steal and Adapt
 
+The canonical reference implementation of the full governance loop — scratchpad ingestion, constitution, blast-radius routing, human checkpoint, and SQLite time-lock — is [`brand-triage-agent/`](brand-triage-agent/).
+
 Five real agent canvases, each with a pre-generated eval block.
 Pick the one closest to your agent, swap the fields, and have a judge prompt running in under 10 minutes — no server, no account.
 

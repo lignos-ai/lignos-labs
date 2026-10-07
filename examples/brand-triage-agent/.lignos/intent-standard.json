@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0.0",
+  "intentId": "brand-deal-triage",
+  "displayName": "Autonomous Brand Deal Triage Agent",
+  "jtbdType": "triage",
+  "oneSentenceStandard": "This agent is hired to turn an inbound brand pitch into a sendable counter that already matches the rate card — and must always hold a $2,500 minimum and refuse category exclusivity under $5,000.",
+  "jtbd": {
+    "situation": "A creator partnerships lead opens an inbound brand pitch and needs a sendable counter before any contract, rate, or reply goes out.",
+    "user": "Creator partnerships lead triaging the inbound sponsorship inbox",
+    "outcome": "A counter whose rate and exclusivity decision can be sent as-is on a low-risk pitch, and a hard stop when exclusivity or the dollar amount raises the blast radius"
+  },
+  "productStandard": {
+    "summary": "The counter reads like the partnerships lead already checked the rate card: $2,500 floor, $1,000 whitelisting adder, no category exclusivity under $5,000.",
+    "tone": "Direct and commercial, with no hedging and no complimentary exceptions",
+    "format": "Raw JSON with offeredBudgetUsd (integer or null), counterRateUsd (integer), whitelistingApproved (boolean), exclusivityAccepted (boolean), and reasoning (string). No markdown.",
+    "constraints": [
+      "Production floor is $2,500. counterRateUsd is the maximum of the offered budget and the floor.",
+      "Paid whitelisting or amplification adds $1,000 to the floor before that maximum is taken, and whitelistingApproved is true only when the pitch asks for it.",
+      "Category exclusivity is accepted only when the offered budget is at least $5,000. Otherwise exclusivityAccepted is false.",
+      "If exclusivity is not requested, exclusivityAccepted is true.",
+      "If the pitch does not state a budget, offeredBudgetUsd is null and the offered amount used in the maximum is 0. Never invent a number."
+    ]
+  },
+  "antiPattern": {
+    "description": "Quoting the brand's number back when it sits under the floor, or accepting category exclusivity on a deal under $5,000 because the email sounded friendly.",
+    "signals": [
+      "we can make an exception on exclusivity",
+      "happy to lock exclusivity",
+      "complimentary",
+      "as a gesture",
+      "meet you at your budget"
+    ],
+    "examples": [
+      "Happy to lock exclusivity at your $1,200 budget as a gesture of partnership."
+    ]
+  },
+  "valueProxy": {
+    "observableSuccess": "On a low-risk pitch the partnerships lead sends the counter without editing the rate or the exclusivity decision. Straight-through rate stays at or above 75% (STP >= 75%).",
+    "judgeQuestion": "Would a partnerships lead send this counter without changing the rate or the exclusivity decision, and would a week of pitches like this hold a straight-through rate of at least 75%?"
+  },
+  "manifest": {
+    "version": "1.0.0",
+    "milestones": [
+      { "span": "scratchpad-ingestion", "required": true },
+      { "span": "constitution-policy", "required": true },
+      { "span": "blast-radius-routing", "required": true },
+      { "span": "human-checkpoint", "required": false },
+      { "span": "time-lock-commit", "required": true }
+    ],
+    "sla": {
+      "maxTurns": 4,
+      "maxDurationMs": 20000,
+      "maxCostUsd": 0.05,
+      "maxTokens": 8000
+    }
+  },
+  "eval": {
+    "judgePrompt": "You are evaluating a brand deal triage counter against this product standard.\n\nStandard: $2,500 production floor, plus $1,000 when whitelisting is requested. Counter is the max of the offered budget and that floor. Category exclusivity is accepted only when the offered budget is at least $5,000. Unstated budgets stay null.\nAnti-pattern: meeting the brand under the floor, or accepting exclusivity under $5,000.\nValue signal: a partnerships lead can send the counter unchanged, and low-risk deals support a straight-through rate of at least 75%.\n\nScore the output against the rate card. A friendly email that breaks a floor is a FAIL.",
+    "dimensions": [
+      "jtbd_fit",
+      "standard_adherence",
+      "anti_pattern_guard",
+      "value_signal",
+      "structural_integrity"
+    ],
+    "scenarioSeeds": [
+      {
+        "id": "lowball-exclusivity-whitelist",
+        "inputSketch": "Hi! We love your work. We have a $1,200 budget for 1 Reel and 3 Stories.\nWe also need 30 days of paid whitelisting and 60 days of skincare exclusivity.",
+        "expectedBehavior": "Counter at the $3,500 floor ($2,500 plus $1,000 whitelisting) and decline exclusivity because $1,200 is under $5,000.\njs: JSON.parse(output).offeredBudgetUsd === 1200 && JSON.parse(output).counterRateUsd === 3500 && JSON.parse(output).whitelistingApproved === true && JSON.parse(output).exclusivityAccepted === false",
+        "failureMode": "Accepting exclusivity or countering at $1,200 because the brand named that budget."
+      },
+      {
+        "id": "unstated-budget-exclusivity",
+        "inputSketch": "Hey! Aurora Home here. We would love a dedicated Reel sometime this quarter.\nWe need you exclusive in home goods, but we will figure out budget once we see your rate.\nNo paid ads.",
+        "expectedBehavior": "Leave the offered budget null, counter at the $2,500 floor, and decline exclusivity.\njs: JSON.parse(output).offeredBudgetUsd === null && JSON.parse(output).counterRateUsd === 2500 && JSON.parse(output).whitelistingApproved === false && JSON.parse(output).exclusivityAccepted === false",
+        "failureMode": "Inventing a budget the email never stated, or accepting exclusivity with no dollar amount on the table."
+      },
+      {
+        "id": "standard-reel",
+        "inputSketch": "Hey there! We have $3,000 for a dedicated Instagram Reel highlighting our fall jacket.\nNo paid ads, no category lockup requested.",
+        "expectedBehavior": "Keep the $3,000 offer because it clears the floor, decline whitelisting, and treat exclusivity as not requested.\njs: JSON.parse(output).offeredBudgetUsd === 3000 && JSON.parse(output).counterRateUsd === 3000 && JSON.parse(output).whitelistingApproved === false && JSON.parse(output).exclusivityAccepted === true",
+        "failureMode": "Dropping the counter to $2,500 and leaving money on the table, or inventing a lockup."
+      },
+      {
+        "id": "high-budget-exclusive",
+        "inputSketch": "Hello! We are launching a national beverage campaign and want to book you for 1 Reel.\nOur budget is $6,000. We require 30 days of beverage exclusivity. No paid whitelisting.",
+        "expectedBehavior": "Counter at $6,000 and accept exclusivity because the offered budget clears $5,000.\njs: JSON.parse(output).offeredBudgetUsd === 6000 && JSON.parse(output).counterRateUsd === 6000 && JSON.parse(output).whitelistingApproved === false && JSON.parse(output).exclusivityAccepted === true",
+        "failureMode": "Refusing exclusivity that the rate card allows, or inflating the counter past the offer with no whitelisting."
+      },
+      {
+        "id": "touchless-floor",
+        "inputSketch": "Hey team! We're reaching out from Zenith Watches.\nWe love your content and want to sponsor 1 dedicated Instagram Reel next month.\nOur starting budget is $2,200. We do not require any paid ad whitelisting or category exclusivity.",
+        "expectedBehavior": "Lift the counter to the $2,500 floor and leave exclusivity unrequested. A partnerships lead can send this without an edit, which is what a straight-through rate of at least 75% is made of.\njs: JSON.parse(output).offeredBudgetUsd === 2200 && JSON.parse(output).counterRateUsd === 2500 && JSON.parse(output).whitelistingApproved === false && JSON.parse(output).exclusivityAccepted === true",
+        "failureMode": "Quoting $2,200 back to the brand, which forces a human to correct the rate and pulls the straight-through rate under 75%."
+      }
+    ],
+    "blockingAssertions": [
+      "counterRateUsd is always at least 2500",
+      "exclusivityAccepted is false whenever the offered budget is under 5000",
+      "offeredBudgetUsd is null when the pitch states no budget",
+      "Do not use the phrase: we can make an exception on exclusivity",
+      "Do not use the phrase: happy to lock exclusivity"
+    ]
+  },
+  "sources": {
+    "canvasPath": ".lignos/canvas.md",
+    "constitutionPath": ".lignos/constitution.md",
+    "generatedAt": "2026-10-07T11:05:00.000Z"
+  }
+}
